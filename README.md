@@ -1,6 +1,6 @@
 # 🗄️ Entrepôt de Données RH — Projet SI Décisionnels
 
-> ESPRIT · 1BA2 · Enseignant : Sofien Boutaib · 2025–2026  
+> ESPRIT · 1BA2 · 2025–2026  
 > Deadline : 14 Mars 2026
 
 ## Contexte
