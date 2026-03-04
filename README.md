@@ -1,17 +1,22 @@
-Les 3 fichiers sont régénérés avec des anomalies réalistes. Voici le récapitulatif exact de ce que Talend devra traiter :
+# 🗄️ Entrepôt de Données RH — Projet SI Décisionnels
 
-🗄️ SQL — employes_salaires.sql
+> ESPRIT · 1BA2 · Enseignant : Sofien Boutaib · 2025–2026  
+> Deadline : 14 Mars 2026
 
-- 12 doublons sur la table employes (même matricule, nom en casse différente ex: BEN ALI vs ben ali)
-- NULLs : ville (~10%), email (~8%), téléphone (~10%), poste (~7%)
-- 66 salaires NULL sur 1 200 lignes (~6%)
+## Contexte
 
-📄 CSV — absences_presences.csv
+Centralisation des données RH d'une entreprise via un pipeline ETL complet (Talend),
+modélisé en schéma étoile et chargé dans un entrepôt de données PostgreSQL.
 
-- 66 lignes dupliquées sur 624 (~12%)
-- NULLs : motif (46 cas), durée (41 cas), justifié (28 cas)
+## Sources de données
 
-📊 Excel — formations.xlsx
+| Fichier | Type | Lignes | Anomalies |
+|---|---|---|---|
+| `absences_presences.csv` | CSV | ~624 | 66 doublons · nulls motif/durée |
+| `employes_salaires.sql` | SQL | 100 emp + 1200 salaires | 12 doublons · nulls ville/email |
+| `formations.xlsx` | Excel | ~280 | 30 doublons · nulls coût/statut |
 
-- 30 lignes dupliquées sur 280 (~12%)
-- NULLs : coût (25 cas), statut (19 cas), durée (13 cas)
+> ⚠️ Les données sont intentionnellement imparfaites (~12% doublons, ~10% nulls)
+> pour simuler un cas réel et justifier les étapes de nettoyage dans Talend.
+
+## Structure du projet
