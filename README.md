@@ -1,16 +1,16 @@
-# 🗄️ Entrepôt de Données RH — Projet SI Décisionnels
+# 🗄️ Entrepôt de Données RH - Projet SI Décisionnels
 
 <div align="center">
 
-![Talend](https://img.shields.io/badge/Talend-Open%20Studio-FF6D00?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyeiIvPjwvc3ZnPg==)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&logo=mysql&logoColor=white)
+![Talend](https://img.shields.io/badge/Talend-Open%20Studio-FF6D00?style=flat-square)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white)
 ![PowerBI](https://img.shields.io/badge/Power%20BI-Dashboard-F2C811?style=flat-square&logo=powerbi&logoColor=black)
 ![Excel](https://img.shields.io/badge/Excel-XLSX-217346?style=flat-square&logo=microsoftexcel&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-cyan?style=flat-square)
 ![ESPRIT](https://img.shields.io/badge/ESPRIT-1BA2%20·%202025--2026-8b5cf6?style=flat-square)
 
 **Projet académique - Systèmes d'Information Décisionnels**  
-Deadline : **14 Mars 2026**
+Enseignant : **Sofien Boutaib** · Deadline : **14 Mars 2026**
 
 [🌐 Demo interactive](https://hmz931.github.io/Projet_SI_Decisonnels_esprit_ESB_1BA2_S1/) · [📊 Rapport Power BI](powerbi/) · [⚙️ Jobs Talend](talend/JOBS.md)
 
@@ -23,13 +23,13 @@ Deadline : **14 Mars 2026**
 | | Nom | Rôle |
 |---|---|---|
 | 👨‍💻 | **Hamza Bouguerra** | ETL · Modélisation · Dashboard · Power BI · Documentation |
-| 👨‍💻 | **Feres Messedi** | ETL · Modélisation · Dashboard · Power BI · Documentation |
+| 👨‍💻 | **Fares Messedi** | ETL · Modélisation · Dashboard · Power BI · Documentation |
 
 ---
 
 ## 📋 Contexte
 
-Une entreprise souhaite **centraliser les données RH de ses 100 employés** afin d'améliorer la gestion des ressources humaines. Les données proviennent de **3 sources hétérogènes** (CSV, SQL, Excel), contiennent des anomalies intentionnelles (~10% doublons, ~10% nulls) et doivent être intégrées dans un **entrepôt de données modélisé en schéma étoile** via un pipeline ETL complet sur **Talend Open Studio**.
+Une entreprise souhaite **centraliser les données RH de ses 100 employés** afin d'améliorer la gestion des ressources humaines. Les données proviennent de **3 sources hétérogènes** (CSV, SQL, Excel), contiennent des anomalies intentionnelles (~10% doublons, ~10% nulls) et doivent être intégrées dans un **entrepôt de données modélisé en schéma étoile** via un pipeline ETL complet sur **Talend Open Studio**, chargé dans **PostgreSQL 16**.
 
 ---
 
@@ -45,7 +45,7 @@ Une entreprise souhaite **centraliser les données RH de ses 100 employés** afi
 
 ---
 
-## ⭐ Modélisation — Schéma en Étoile
+## ⭐ Modélisation - Schéma en Étoile
 
 ```
                     ┌─────────────────┐
@@ -80,13 +80,13 @@ Une entreprise souhaite **centraliser les données RH de ses 100 employés** afi
 
 ---
 
-## ⚙️ Pipeline ETL — Jobs Talend
+## ⚙️ Pipeline ETL - Jobs Talend
 
 | Job | Source → Cible | Entrée | Sortie | Anomalies traitées |
 |---|---|---|---|---|
-| `J0_InitialLoad` | — → MySQL `rh_dw` | — | Schéma créé | DDL + vérification sources |
+| `J0_InitialLoad` | - → PostgreSQL `rh_dw` | - | Schéma créé | DDL + vérification sources |
 | `J1_Load_DIM_EMPLOYE` | SQL → DIM_EMPLOYE + DIM_SERVICE | 112 | **100 + 10** | 12 doublons · 30 NULLs |
-| `J2_Load_DIM_TEMPS` | Générée → DIM_TEMPS | — | **1 096** | Calendrier 2022→2024 |
+| `J2_Load_DIM_TEMPS` | Générée → DIM_TEMPS | - | **1 096** | Calendrier 2022→2024 |
 | `J3_Load_DIM_ABSENCE` | CSV → DIM_ABSENCE + DIM_MOTIF | 582 | **520 + 7** | 62 doublons · 157 NULLs |
 | `J4_Load_DIM_FORMATION` | Excel → DIM_FORMATION | 266 | **238** | 28 doublons · 85 NULLs |
 | `J5_Load_FAIT_RH` | DIM/* → FAIT_RH | 100 emp | **100** | Agrégations + calculs |
@@ -97,12 +97,12 @@ Une entreprise souhaite **centraliser les données RH de ses 100 employés** afi
 
 ## 📊 Rapport Power BI
 
-Le rapport décisionnel connecté à la base `rh_dw` contient 4 pages :
+Le rapport décisionnel connecté à la base `rh_dw` (PostgreSQL) contient 4 pages :
 
-- **Vue Générale RH** — KPIs, masse salariale, répartition par service
-- **Analyse des Absences** — motifs, jours, top employés
-- **Analyse des Formations** — coûts, statuts, évolution par année
-- **Profil Employé** — fiche individuelle (drill-through)
+- **Vue Générale RH** - KPIs, masse salariale, répartition par service
+- **Analyse des Absences** - motifs, jours, top employés
+- **Analyse des Formations** - coûts, statuts, évolution par année
+- **Profil Employé** - fiche individuelle (drill-through)
 
 📁 Fichier : [`powerbi/rapport_RH.pbix`](powerbi/rapport_RH.pbix)
 
@@ -140,8 +140,8 @@ Le rapport décisionnel connecté à la base `rh_dw` contient 4 pages :
 
 | Outil | Usage |
 |---|---|
-| **Talend Open Studio** | Pipeline ETL — 6 jobs |
-| **MySQL 8.0** | Base source `rh_entreprise` + DW `rh_dw` |
+| **Talend Open Studio** | Pipeline ETL - 6 jobs |
+| **PostgreSQL 16** | Base source `rh_entreprise` + DW `rh_dw` |
 | **Power BI Desktop** | Rapport décisionnel |
 | **HTML / JS / SheetJS** | Dashboard interactif de visualisation |
 
@@ -153,16 +153,20 @@ Le rapport décisionnel connecté à la base `rh_dw` contient 4 pages :
 # 1. Cloner le repo
 git clone https://github.com/Hmz931/Projet_SI_Decisonnels_esprit_ESB_1BA2_S1.git
 
-# 2. Importer les données sources dans MySQL
-mysql -u root -p rh_entreprise < data/raw/employes_salaires.sql
+# 2. Créer les bases PostgreSQL (dans pgAdmin ou psql)
+psql -U postgres -c "CREATE DATABASE rh_entreprise;"
+psql -U postgres -c "CREATE DATABASE rh_dw;"
 
-# 3. Ouvrir Talend et importer le projet "Projet_SI_Decisonnels"
+# 3. Importer les données sources
+psql -U postgres -d rh_entreprise -f data/raw/employes_salaires.sql
 
-# 4. Exécuter les jobs dans l'ordre :
+# 4. Ouvrir Talend et importer le projet "Projet_SI_Decisonnels"
+
+# 5. Exécuter les jobs dans l'ordre :
 #    J0 → J1 → J2 → J3 → J4 → J5
 
-# 5. Ouvrir powerbi/rapport_RH.pbix dans Power BI Desktop
-#    et rafraîchir la connexion vers rh_dw
+# 6. Ouvrir powerbi/rapport_RH.pbix dans Power BI Desktop
+#    Connecteur : PostgreSQL · host=localhost · port=5432 · db=rh_dw
 ```
 
 ---
