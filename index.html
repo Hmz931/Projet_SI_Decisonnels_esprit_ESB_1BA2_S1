@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Entrepôt de Données RH — SI Décisionnels</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   --bg: #07090f;
@@ -1049,32 +1050,85 @@ function generateData() {
         log(`✅ SQL : ${nEmp} employés + ${nEmp*12} salaires`, 'success');
       }
 
-      // ── EXCEL (CSV) ──────────────────────────────────────────
+      // ── EXCEL VRAI .xlsx via SheetJS ─────────────────────────
       if (fileState.xl) {
-        log('📊 Génération formations (Excel/CSV)...','info');
+        log('📊 Génération formations.xlsx (vrai fichier Excel)...','info');
         const statuts = ['Complétée','En cours','Planifiée'];
-        const rows = [['ID Formation','Matricule','Nom','Prénom','Service','Intitulé','Durée (h)','Année','Coût (DT)','Statut']];
-        let fid=1;
-        const baseRows=[];
+        const header = ['ID Formation','Matricule','Nom','Prénom','Service','Intitulé','Durée (h)','Année','Coût (DT)','Statut'];
+        let fid = 1;
+        const baseRows = [];
         employes.forEach(e => {
-          const n = 1+Math.floor(Math.random()*maxForm);
-          const picked = [...formations].sort(()=>Math.random()-.5).slice(0,n);
-          picked.forEach(([intit,dur]) => {
-            const yr=2022+Math.floor(Math.random()*3), cout=maybe([500,800,1000,1200,1500,2000][Math.floor(Math.random()*6)]), stat=maybe(rnd(statuts));
-            baseRows.push([`FORM${String(fid).padStart(4,'0')}`,e.mat,e.nom,e.prenom,e.service,intit,maybe(dur)||'',yr,cout===null?'':cout,stat===null?'':stat]);
+          const n = 1 + Math.floor(Math.random() * maxForm);
+          const picked = [...formations].sort(() => Math.random() - .5).slice(0, n);
+          picked.forEach(([intit, dur]) => {
+            const yr   = 2022 + Math.floor(Math.random() * 3);
+            const cout = maybe([500,800,1000,1200,1500,2000][Math.floor(Math.random()*6)]);
+            const stat = maybe(rnd(statuts));
+            baseRows.push([
+              `FORM${String(fid).padStart(4,'0')}`,
+              e.mat, e.nom, e.prenom, e.service, intit,
+              maybe(dur) ?? null,
+              yr,
+              cout ?? null,
+              stat ?? null
+            ]);
             fid++;
           });
         });
-        const nDup=Math.floor(baseRows.length*dupPct);
-        const dupes=[];
-        for(let i=0;i<nDup;i++) dupes.push([...baseRows[Math.floor(Math.random()*baseRows.length)]]);
-        const all=[...baseRows,...dupes].sort(()=>Math.random()-.5);
-        all.forEach(r=>rows.push(r));
-        const xlContent = rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
-        generatedData.xl = xlContent;
-        document.getElementById('meta-xl').textContent = `${all.length} lignes · ${nDup} doublons · XLSX`;
+
+        // Doublons
+        const nDup = Math.floor(baseRows.length * dupPct);
+        const dupes = [];
+        for (let i = 0; i < nDup; i++)
+          dupes.push([...baseRows[Math.floor(Math.random() * baseRows.length)]]);
+        const all = [...baseRows, ...dupes].sort(() => Math.random() - .5);
+
+        // Construction SheetJS
+        const wsData = [header, ...all];
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+        // Largeurs colonnes
+        ws['!cols'] = [
+          {wch:14},{wch:14},{wch:16},{wch:14},{wch:20},
+          {wch:36},{wch:12},{wch:8},{wch:11},{wch:14}
+        ];
+
+        // Style header (cellules A1:J1) — fond bleu foncé, texte blanc, gras
+        const headerRange = XLSX.utils.decode_range('A1:J1');
+        for (let C = headerRange.s.c; C <= headerRange.e.c; C++) {
+          const cellAddr = XLSX.utils.encode_cell({ r: 0, c: C });
+          if (!ws[cellAddr]) continue;
+          ws[cellAddr].s = {
+            font:      { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 },
+            fill:      { fgColor: { rgb: '1F4E79' }, patternType: 'solid' },
+            alignment: { horizontal: 'center', vertical: 'center' }
+          };
+        }
+
+        // Feuille résumé par service
+        const services = ["Informatique","Ressources Humaines","Finance","Marketing",
+                          "Commercial","Logistique","Production","Qualité","Administration","Juridique"];
+        const wsResume = XLSX.utils.aoa_to_sheet([
+          ['Service','Nb Formations','Coût Total (DT)'],
+          ...services.map(s => [s,
+            { f: `COUNTIF(Formations!E:E,"${s}")` },
+            { f: `SUMIF(Formations!E:E,"${s}",Formations!I:I)` }
+          ])
+        ]);
+        wsResume['!cols'] = [{wch:25},{wch:16},{wch:18}];
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Formations');
+        XLSX.utils.book_append_sheet(wb, wsResume, 'Résumé par Service');
+
+        // Export binaire ArrayBuffer → Blob
+        const wbOut  = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        generatedData.xl      = wbOut;
+        generatedData.xlIsRaw = true;   // flag pour downloadFile
+
+        document.getElementById('meta-xl').textContent = `${all.length} lignes · ${nDup} doublons · vrai .xlsx`;
         document.getElementById('dl-xl').style.display = 'flex';
-        log(`✅ Excel/CSV : ${all.length} lignes (${nDup} doublons)`, 'success');
+        log(`✅ Excel : ${all.length} lignes (${nDup} doublons) — 2 feuilles`, 'success');
       }
 
       log(`🎉 Génération terminée ! Télécharge les fichiers ci-dessous.`, 'success');
@@ -1088,10 +1142,20 @@ function generateData() {
 }
 
 function downloadFile(type) {
+  if (type === 'xl') {
+    if (!generatedData.xl) return;
+    const blob = new Blob([generatedData.xl], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'formations.xlsx';
+    a.click();
+    return;
+  }
   const config = {
     csv: { data: generatedData.csv, name: 'absences_presences.csv', mime: 'text/csv' },
-    sql: { data: generatedData.sql, name: 'employes_salaires.sql', mime: 'text/plain' },
-    xl:  { data: generatedData.xl,  name: 'formations.xlsx',       mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+    sql: { data: generatedData.sql, name: 'employes_salaires.sql',  mime: 'text/plain' },
   };
   const c = config[type];
   if (!c || !c.data) return;
