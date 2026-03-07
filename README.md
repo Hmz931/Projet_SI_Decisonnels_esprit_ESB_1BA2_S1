@@ -1,4 +1,4 @@
-# 🗄️ Entrepôt de Données RH — Projet SI Décisionnels
+# 🗄️ Entrepôt de Données RH - Projet SI Décisionnels
 
 > ESPRIT · 1BA2 · 2025–2026  
 > Deadline : 14 Mars 2026
