@@ -9,8 +9,8 @@
 ![License](https://img.shields.io/badge/License-MIT-cyan?style=flat-square)
 ![ESPRIT](https://img.shields.io/badge/ESPRIT-1BA2%20·%202025--2026-8b5cf6?style=flat-square)
 
-**Projet académique — Systèmes d'Information Décisionnels**  
-Enseignant : **Sofien Boutaib** · Deadline : **14 Mars 2026**
+**Projet académique - Systèmes d'Information Décisionnels**  
+Deadline : **14 Mars 2026**
 
 [🌐 Demo interactive](https://hmz931.github.io/Projet_SI_Decisonnels_esprit_ESB_1BA2_S1/) · [📊 Rapport Power BI](powerbi/) · [⚙️ Jobs Talend](talend/JOBS.md)
 
@@ -22,8 +22,8 @@ Enseignant : **Sofien Boutaib** · Deadline : **14 Mars 2026**
 
 | | Nom | Rôle |
 |---|---|---|
-| 👨‍💻 | **Hamza Bouguerra** | ETL · Modélisation · Dashboard |
-| 👨‍💻 | **Fares Messedi** | ETL · Power BI · Documentation |
+| 👨‍💻 | **Hamza Bouguerra** | ETL · Modélisation · Dashboard · Power BI · Documentation |
+| 👨‍💻 | **Feres Messedi** | ETL · Modélisation · Dashboard · Power BI · Documentation |
 
 ---
 
