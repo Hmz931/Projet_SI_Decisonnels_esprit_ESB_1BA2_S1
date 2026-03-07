@@ -433,7 +433,7 @@ window.addEventListener('load', () => {
         </div>
         <div class="op-item">
           <div class="op-ico" style="background:rgba(139,92,246,.12)">🔑</div>
-          <div><div class="op-title" style="color:var(--purple)">Clés surrogate</div><div class="op-sub">Génération SK pour chaque dim<br>sk_employe · sk_temps · sk_service<br>sk_formation · sk_absence</div></div>
+          <div><div class="op-title" style="color:var(--purple)">Clés surrogate (clés artificielles par exemple auto-incrémentée)</div><div class="op-sub">Génération SK pour chaque dim<br>sk_employe · sk_temps · sk_service<br>sk_formation · sk_absence</div></div>
         </div>
       </div>
     </div>
@@ -768,7 +768,7 @@ window.addEventListener('load', () => {
         <div class="dim-targets">
           <span class="dim-chip dc-fact">→ FAIT_RH (table finale)</span>
         </div>
-        <div class="job-note">⚠️ Ce job DOIT être exécuté après J1, J2, J3 et J4. Le tMap central effectue des lookups sur chaque dimension pour résoudre les clés surrogate. tAggregateRow calcule les indicateurs agrégés : nb_jours_absence = SUM(duree_jours) GROUP BY sk_employe, nb_formations = COUNT(*) GROUP BY sk_employe.</div>
+        <div class="job-note">⚠️ Ce job DOIT être exécuté après J1, J2, J3 et J4. Le tMap central effectue des lookups sur chaque dimension pour résoudre les clés surrogate (clés artificielles par exemple auto-incrémentée). tAggregateRow calcule les indicateurs agrégés : nb_jours_absence = SUM(duree_jours) GROUP BY sk_employe, nb_formations = COUNT(*) GROUP BY sk_employe.</div>
       </div>
     </div>
 
