@@ -1,11 +1,12 @@
 # ⚙️ Documentation Détaillée des Jobs Talend
-## Projet SI Décisionnels — Entrepôt de Données RH
+## Projet SI Décisionnels - Entrepôt de Données RH
 
 > **Projet** : Création d'un entrepôt de données pour la gestion du personnel  
-> **Auteurs** : Hamza Bouguerra · Fares Messedi — ESPRIT 1BA2  
+> **Auteurs** : Hamza Bouguerra · Fares Messedi - ESPRIT 1BA2  
 > **Enseignant** : Sofien Boutaib | **Deadline** : 14 Mars 2026  
 > **Outil** : Talend Open Studio for Data Integration  
-> **Base source** : MySQL `rh_entreprise` | **Base cible** : MySQL `rh_dw`
+> **Base source** : PostgreSQL `rh_entreprise` (port 5432)  
+> **Base cible** : PostgreSQL `rh_dw` (port 5432)
 
 ---
 
@@ -68,36 +69,37 @@ J5_Load_FAIT_RH   ← EN DERNIER obligatoirement
 
 ---
 
-## J0 — Job_InitialLoad
+## J0 - Job_InitialLoad
 
-**Rôle** : Initialiser la base cible `rh_dw`, créer toutes les tables, vérifier l'accès aux 3 sources.
+**Rôle** : Créer les tables du DW dans PostgreSQL `rh_dw`, vérifier l'accès aux 3 sources.
+
+> ⚠️ Créer manuellement les bases dans pgAdmin avant de lancer ce job :  
+> `CREATE DATABASE rh_entreprise;` et `CREATE DATABASE rh_dw;`
 
 ### Composants et configuration
 
 | Composant | Paramètres |
 |---|---|
-| `tMysqlConnection` | host=`localhost` · port=`3306` · db=`rh_dw` · user=`root` |
-| `tFileCheck` | Chemins vers les 3 fichiers sources |
-| `tMysqlRow` | Exécute le DDL ci-dessous |
-| `tLogRow` | Affiche `[OK] Base rh_dw initialisée — {timestamp}` |
+| `tPostgresqlConnection` | host=`localhost` · port=`5432` · db=`rh_dw` · user=`postgres` |
+| `tFileCheck` | Vérifie les 3 chemins fichiers sources |
+| `tPostgresqlRow` | Exécute le DDL PostgreSQL ci-dessous |
+| `tLogRow` | Affiche `[OK] Base rh_dw initialisée - {timestamp}` |
 | `tDie` | Déclenché si un fichier source est introuvable |
 
 ### Flux
 
 ```
-[tMysqlConnection] ──→ [tFileCheck] ──→ [tMysqlRow : DDL] ──→ [tLogRow]
-                             ↓ (fichier manquant)
-                        [tDie "Fichier source introuvable"]
+[tPostgresqlConnection] ──→ [tFileCheck] ──→ [tPostgresqlRow : DDL] ──→ [tLogRow]
+                                  ↓ (fichier manquant)
+                             [tDie "Fichier source introuvable"]
 ```
 
-### Script DDL — à coller dans `tMysqlRow`
+### Script DDL PostgreSQL - à coller dans `tPostgresqlRow`
 
 ```sql
-CREATE DATABASE IF NOT EXISTS rh_dw;
-USE rh_dw;
-
-CREATE TABLE IF NOT EXISTS DIM_EMPLOYE (
-    sk_employe    INT AUTO_INCREMENT PRIMARY KEY,
+-- Dimension Employé
+CREATE TABLE IF NOT EXISTS dim_employe (
+    sk_employe    SERIAL        PRIMARY KEY,
     matricule     VARCHAR(10)   NOT NULL UNIQUE,
     nom           VARCHAR(50),
     prenom        VARCHAR(50),
@@ -109,79 +111,82 @@ CREATE TABLE IF NOT EXISTS DIM_EMPLOYE (
     telephone     VARCHAR(20)
 );
 
-CREATE TABLE IF NOT EXISTS DIM_SERVICE (
-    sk_service  INT AUTO_INCREMENT PRIMARY KEY,
+-- Dimension Service
+CREATE TABLE IF NOT EXISTS dim_service (
+    sk_service  SERIAL      PRIMARY KEY,
     nom_service VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS DIM_TEMPS (
-    sk_temps      INT AUTO_INCREMENT PRIMARY KEY,
+-- Dimension Temps
+CREATE TABLE IF NOT EXISTS dim_temps (
+    sk_temps      SERIAL      PRIMARY KEY,
     date_complete DATE        NOT NULL UNIQUE,
-    jour          INT,
-    mois          INT,
-    annee         INT,
-    trimestre     INT,
-    semaine       INT,
+    jour          INTEGER,
+    mois          INTEGER,
+    annee         INTEGER,
+    trimestre     INTEGER,
+    semaine       INTEGER,
     nom_mois      VARCHAR(20),
     nom_jour      VARCHAR(20),
-    est_weekend   TINYINT(1)  DEFAULT 0
+    est_weekend   SMALLINT    DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS DIM_ABSENCE (
-    sk_absence   INT AUTO_INCREMENT PRIMARY KEY,
+-- Dimension Absence
+CREATE TABLE IF NOT EXISTS dim_absence (
+    sk_absence   SERIAL      PRIMARY KEY,
     id_absence   VARCHAR(10),
     matricule    VARCHAR(10),
     date_absence DATE,
     motif        VARCHAR(50),
-    duree_jours  INT         DEFAULT 0,
+    duree_jours  INTEGER     DEFAULT 0,
     justifie     VARCHAR(15)
 );
 
-CREATE TABLE IF NOT EXISTS DIM_MOTIF_ABSENCE (
-    sk_motif  INT AUTO_INCREMENT PRIMARY KEY,
+-- Dimension Motif Absence
+CREATE TABLE IF NOT EXISTS dim_motif_absence (
+    sk_motif  SERIAL      PRIMARY KEY,
     motif     VARCHAR(50) NOT NULL UNIQUE,
     categorie VARCHAR(30)
 );
 
-CREATE TABLE IF NOT EXISTS DIM_FORMATION (
-    sk_formation INT AUTO_INCREMENT PRIMARY KEY,
+-- Dimension Formation
+CREATE TABLE IF NOT EXISTS dim_formation (
+    sk_formation SERIAL         PRIMARY KEY,
     id_formation VARCHAR(10),
     matricule    VARCHAR(10),
     intitule     VARCHAR(100),
-    duree_heures INT          DEFAULT 0,
-    annee        INT,
-    cout         DECIMAL(10,2) DEFAULT 0.00,
+    duree_heures INTEGER        DEFAULT 0,
+    annee        INTEGER,
+    cout         NUMERIC(10,2)  DEFAULT 0.00,
     statut       VARCHAR(20)
 );
 
-CREATE TABLE IF NOT EXISTS FAIT_RH (
-    id_fait          INT AUTO_INCREMENT PRIMARY KEY,
-    sk_employe       INT           NOT NULL,
-    sk_service       INT           NOT NULL,
-    sk_temps         INT,
-    sk_absence       INT,
-    sk_formation     INT,
-    sk_motif         INT,
-    salaire_mensuel  DECIMAL(10,2),
-    salaire_annuel   DECIMAL(10,2),
-    prime            DECIMAL(10,2) DEFAULT 0,
-    nb_jours_absence INT           DEFAULT 0,
-    nb_formations    INT           DEFAULT 0,
-    FOREIGN KEY (sk_employe)   REFERENCES DIM_EMPLOYE(sk_employe),
-    FOREIGN KEY (sk_service)   REFERENCES DIM_SERVICE(sk_service),
-    FOREIGN KEY (sk_temps)     REFERENCES DIM_TEMPS(sk_temps),
-    FOREIGN KEY (sk_absence)   REFERENCES DIM_ABSENCE(sk_absence),
-    FOREIGN KEY (sk_formation) REFERENCES DIM_FORMATION(sk_formation),
-    FOREIGN KEY (sk_motif)     REFERENCES DIM_MOTIF_ABSENCE(sk_motif)
+-- Table de Faits
+CREATE TABLE IF NOT EXISTS fait_rh (
+    id_fait          SERIAL        PRIMARY KEY,
+    sk_employe       INTEGER       NOT NULL REFERENCES dim_employe(sk_employe),
+    sk_service       INTEGER       NOT NULL REFERENCES dim_service(sk_service),
+    sk_temps         INTEGER       REFERENCES dim_temps(sk_temps),
+    sk_absence       INTEGER       REFERENCES dim_absence(sk_absence),
+    sk_formation     INTEGER       REFERENCES dim_formation(sk_formation),
+    sk_motif         INTEGER       REFERENCES dim_motif_absence(sk_motif),
+    salaire_mensuel  NUMERIC(10,2),
+    salaire_annuel   NUMERIC(10,2),
+    prime            NUMERIC(10,2) DEFAULT 0,
+    nb_jours_absence INTEGER       DEFAULT 0,
+    nb_formations    INTEGER       DEFAULT 0
 );
 ```
 
+> 💡 PostgreSQL : `SERIAL` = équivalent de `AUTO_INCREMENT` MySQL.  
+> `NUMERIC` = équivalent de `DECIMAL`. Pas de `TINYINT` → utiliser `SMALLINT`.
+
 ---
 
-## J1 — Job_Load_DIM_EMPLOYE
+## J1 - Job_Load_DIM_EMPLOYE
 
-**Source** : MySQL `rh_entreprise` → table `employes`  
-**Cibles** : `DIM_EMPLOYE` + `DIM_SERVICE`
+**Source** : PostgreSQL `rh_entreprise` → table `employes`  
+**Cibles** : `dim_employe` + `dim_service` dans `rh_dw`
 
 ### Anomalies réelles identifiées
 
@@ -205,12 +210,12 @@ NULLs par colonne :
 ### Flux Talend
 
 ```
-[tMysqlConnection — rh_entreprise]
+[tPostgresqlConnection - rh_entreprise]
          ↓
-[tMysqlInput]
+[tPostgresqlInput]
   Query : SELECT * FROM employes
          ↓
-[tMap — Normalisation casse]
+[tMap - Normalisation casse]
   nom    → StringHandling.UPCASE(TRIM(nom))
   prenom → StringHandling.UPCASE_FIRST_LOWER(TRIM(prenom))
          ↓
@@ -218,12 +223,12 @@ NULLs par colonne :
   Clé   : matricule
   → rejeté → [tLogRow] "DOUBLON éliminé : {matricule}"
          ↓
-[tMap — Corrections NULL + split service]
-  Flux 1 ──→ [tMysqlOutput] DIM_EMPLOYE  (INSERT)
-  Flux 2 ──→ [tMysqlOutput] DIM_SERVICE  (INSERT IGNORE)
+[tMap - Corrections NULL + split service]
+  Flux 1 ──→ [tPostgresqlOutput] dim_employe
+  Flux 2 ──→ [tPostgresqlOutput] dim_service
 ```
 
-### Expressions tMap — Flux 1 (DIM_EMPLOYE)
+### Expressions tMap - Flux 1 (dim_employe)
 
 ```java
 out1.matricule     = row.matricule
@@ -241,26 +246,36 @@ out1.telephone     = (row.telephone == null || row.telephone.isEmpty())
                      ? "Non renseigné" : row.telephone
 ```
 
-### Expressions tMap — Flux 2 (DIM_SERVICE)
+### Expressions tMap - Flux 2 (dim_service)
 
 ```java
 out2.nom_service = row.service
-// INSERT IGNORE sur UNIQUE KEY → 10 services uniques automatiquement
 ```
+
+### Configuration tPostgresqlOutput - dim_service
+
+```
+Action sur table : Insert
+Gestion doublons : ON CONFLICT (nom_service) DO NOTHING
+```
+
+> ⚠️ PostgreSQL n'a pas `INSERT IGNORE`. Il faut utiliser :  
+> `INSERT INTO dim_service (nom_service) VALUES (?) ON CONFLICT (nom_service) DO NOTHING`  
+> → Dans Talend, cocher **"Use batch size"** et gérer via **tPostgresqlRow** si besoin.
 
 ### Résultat attendu
 
 | Table | Entrée | Sortie |
 |---|---|---|
-| DIM_EMPLOYE | 112 inserts | **100 lignes** |
-| DIM_SERVICE | 100 lignes | **10 lignes** |
+| dim_employe | 112 inserts | **100 lignes** |
+| dim_service | 100 lignes | **10 lignes** |
 
 ---
 
-## J2 — Job_Load_DIM_TEMPS
+## J2 - Job_Load_DIM_TEMPS
 
-**Source** : Générée programmatiquement — aucun fichier requis  
-**Cible** : `DIM_TEMPS` | **Période** : 2022-01-01 → 2024-12-31
+**Source** : Générée programmatiquement - aucun fichier requis  
+**Cible** : `dim_temps` | **Période** : 2022-01-01 → 2024-12-31
 
 ### Flux Talend
 
@@ -271,10 +286,11 @@ out2.nom_service = row.service
          ↓
 [tFlowToIterate] → une ligne par jour
          ↓
-[tMap — Calcul des attributs temporels]
+[tMap - Calcul des attributs temporels]
          ↓
-[tMysqlOutput — DIM_TEMPS]
-  Action : INSERT IGNORE
+[tPostgresqlOutput - dim_temps]
+  Action : INSERT
+  Doublons : ON CONFLICT (date_complete) DO NOTHING
 ```
 
 ### Expressions tMap
@@ -305,16 +321,16 @@ out.est_weekend   = (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
 ```
 
 ### Résultat attendu
-- **1 096 lignes** dans DIM_TEMPS (3 ans de calendrier)
+- **1 096 lignes** dans dim_temps (3 ans de calendrier)
 
-> 💡 Ce job est indépendant — il peut tourner en parallèle de J1.
+> 💡 Ce job est indépendant - il peut tourner en parallèle de J1.
 
 ---
 
-## J3 — Job_Load_DIM_ABSENCE
+## J3 - Job_Load_DIM_ABSENCE
 
 **Source** : `data/raw/absences_presences.csv` (séparateur `;`)  
-**Cibles** : `DIM_ABSENCE` + `DIM_MOTIF_ABSENCE`
+**Cibles** : `dim_absence` + `dim_motif_absence`
 
 ### Anomalies réelles identifiées
 
@@ -327,7 +343,7 @@ NULL duree_jours : 50 cas     (8.6%)  → 0
 NULL justifie    : 53 cas     (9.1%)  → "Non renseigné"
 remarque         : 582 vides          → ne pas charger
 
-Motifs valides présents dans le fichier :
+Motifs valides présents :
   Accident de travail · Congé annuel · Congé sans solde
   Formation · Maladie · Maternité/Paternité
 ```
@@ -350,8 +366,8 @@ Motifs valides présents dans le fichier :
   justifie vide → "Non renseigné"
          ↓
 [tMap]
-  Flux 1 ──→ [tMysqlOutput] DIM_ABSENCE
-  Flux 2 ──→ [tUniqRow motif] ──→ [tMysqlOutput] DIM_MOTIF_ABSENCE
+  Flux 1 ──→ [tPostgresqlOutput] dim_absence
+  Flux 2 ──→ [tUniqRow motif] ──→ [tPostgresqlOutput] dim_motif_absence
 ```
 
 ### Schéma tFileInputDelimited
@@ -366,18 +382,18 @@ Motifs valides présents dans le fichier :
 | justifie | justifie | String | corriger |
 | remarque | remarque | String | **ne pas mapper** |
 
-### Expressions tMap — Flux 1 (DIM_ABSENCE)
+### Expressions tMap - Flux 1 (dim_absence)
 
 ```java
 out1.id_absence   = row.id_absence
 out1.matricule    = row.matricule
 out1.date_absence = row.date_absence
-out1.motif        = row.motif      // déjà corrigé par tReplaceList
+out1.motif        = row.motif
 out1.duree_jours  = (row.duree_jours == null) ? 0 : row.duree_jours
-out1.justifie     = row.justifie   // déjà corrigé par tReplaceList
+out1.justifie     = row.justifie
 ```
 
-### Expressions tMap — Flux 2 (DIM_MOTIF_ABSENCE)
+### Expressions tMap - Flux 2 (dim_motif_absence)
 
 ```java
 String m = row.motif;
@@ -388,19 +404,26 @@ out2.categorie = m.equals("Maladie") || m.equals("Accident de travail") ? "Médi
                : m.equals("Formation") ? "Professionnel" : "Autre";
 ```
 
+### Configuration tPostgresqlOutput - dim_motif_absence
+
+```sql
+-- Gestion doublons PostgreSQL
+ON CONFLICT (motif) DO NOTHING
+```
+
 ### Résultat attendu
 
 | Table | Entrée | Sortie |
 |---|---|---|
-| DIM_ABSENCE | 582 lignes | **520 lignes** |
-| DIM_MOTIF_ABSENCE | motifs uniques | **7 lignes** |
+| dim_absence | 582 lignes | **520 lignes** |
+| dim_motif_absence | motifs uniques | **7 lignes** |
 
 ---
 
-## J4 — Job_Load_DIM_FORMATION
+## J4 - Job_Load_DIM_FORMATION
 
-**Source** : `data/raw/formations.xlsx` — feuille `Formations`  
-**Cible** : `DIM_FORMATION`
+**Source** : `data/raw/formations.xlsx` - feuille `Formations`  
+**Cible** : `dim_formation`
 
 ### Anomalies réelles identifiées
 
@@ -412,7 +435,7 @@ NULL Coût (DT)   : 31 cas     (11.7%) → 0.0
 NULL Statut      : 30 cas     (11.3%) → "Inconnu"
 NULL Durée (h)   : 24 cas     (9.0%)  → 0
 
-16 formations distinctes dans le fichier :
+16 formations distinctes :
   Analyse de données · Communication professionnelle · Cybersécurité
   Droit du travail · ERP SAP · Excel avancé · Leadership
   Management de projet · Marketing digital · Négociation commerciale
@@ -436,9 +459,9 @@ Statuts      : Complétée (77) · En cours (89) · Planifiée (70) · NULL (30)
   Clé : ID Formation
   → rejeté → [tLogRow] "DOUBLON Excel : {id_formation}"
          ↓
-[tMap — Corrections NULL]
+[tMap - Corrections NULL]
          ↓
-[tMysqlOutput — DIM_FORMATION]
+[tPostgresqlOutput - dim_formation]
   Action : INSERT
 ```
 
@@ -474,39 +497,40 @@ out.statut       = (row.statut == null || row.statut.isEmpty())
 
 | Table | Entrée | Sortie |
 |---|---|---|
-| DIM_FORMATION | 266 lignes | **238 lignes** |
+| dim_formation | 266 lignes | **238 lignes** |
 
 ---
 
-## J5 — Job_Load_FAIT_RH
+## J5 - Job_Load_FAIT_RH
 
-**⚠️ Exécuter EN DERNIER — J1 à J4 obligatoirement terminés**  
+**⚠️ Exécuter EN DERNIER - J1 à J4 obligatoirement terminés**  
 **Sources** : toutes les DIM de `rh_dw`  
-**Cible** : `FAIT_RH`
+**Cible** : `fait_rh`
 
 ### Flux Talend
 
 ```
-[tMysqlInput] SELECT * FROM DIM_EMPLOYE   ← flux principal
+[tPostgresqlInput] SELECT * FROM dim_employe   ← flux principal
          ↓
 [tMap central]
-  ├─ lookup DIM_SERVICE   (par nom_service) → sk_service
-  ├─ lookup agg_absences  (par matricule)   → nb_jours_absence
-  └─ lookup agg_formations(par matricule)   → nb_formations
+  ├─ lookup dim_service    (par nom_service) → sk_service
+  ├─ lookup agg_absences   (par matricule)   → nb_jours_absence
+  └─ lookup agg_formations (par matricule)   → nb_formations
          ↓
-[tMysqlOutput — FAIT_RH] INSERT
+[tPostgresqlOutput - fait_rh] INSERT
 
 ─── Sous-flux préalables ──────────────────────────────────────
-[tMysqlInput agg_absences]
+[tPostgresqlInput agg_absences]
   SELECT matricule,
          SUM(duree_jours) AS nb_jours_absence,
          COUNT(*)         AS nb_absences_total
-  FROM DIM_ABSENCE GROUP BY matricule
+  FROM dim_absence GROUP BY matricule
   → [tHashOutput "agg_absences"]
 
-[tMysqlInput agg_formations]
-  SELECT matricule, COUNT(*) AS nb_formations
-  FROM DIM_FORMATION GROUP BY matricule
+[tPostgresqlInput agg_formations]
+  SELECT matricule,
+         COUNT(*) AS nb_formations
+  FROM dim_formation GROUP BY matricule
   → [tHashOutput "agg_formations"]
 ```
 
@@ -524,7 +548,7 @@ out.salaire_annuel   = (emp.salaire_mensuel == null)
 out.prime            = 0.0
 
 // Agrégats
-out.nb_jours_absence = (agg_abs.nb_jours_absence  == null)
+out.nb_jours_absence = (agg_abs.nb_jours_absence == null)
                        ? 0 : agg_abs.nb_jours_absence
 out.nb_formations    = (agg_form.nb_formations == null)
                        ? 0 : agg_form.nb_formations
@@ -534,7 +558,7 @@ out.nb_formations    = (agg_form.nb_formations == null)
 
 | Table | Sortie |
 |---|---|
-| FAIT_RH | **100 lignes** (1 par employé) |
+| fait_rh | **100 lignes** (1 par employé) |
 
 ---
 
@@ -542,13 +566,30 @@ out.nb_formations    = (agg_form.nb_formations == null)
 
 | Job | Source | Lignes entrée | Doublons supprimés | NULLs corrigés | Lignes chargées |
 |---|---|---|---|---|---|
-| J1 → DIM_EMPLOYE | SQL | 112 | **12** | 30 valeurs | **100** |
-| J1 → DIM_SERVICE | SQL | 100 | dédoublonné | — | **10** |
-| J2 → DIM_TEMPS | générée | — | — | — | **1 096** |
-| J3 → DIM_ABSENCE | CSV | 582 | **62** | 157 valeurs | **520** |
-| J3 → DIM_MOTIF_ABSENCE | CSV | 520 | dédoublonné | — | **7** |
-| J4 → DIM_FORMATION | Excel | 266 | **28** | 85 valeurs | **238** |
-| J5 → FAIT_RH | DIM/* | 100 emp | — | agrégations | **100** |
+| J1 → dim_employe | SQL | 112 | **12** | 30 valeurs | **100** |
+| J1 → dim_service | SQL | 100 | dédoublonné | - | **10** |
+| J2 → dim_temps | générée | - | - | - | **1 096** |
+| J3 → dim_absence | CSV | 582 | **62** | 157 valeurs | **520** |
+| J3 → dim_motif_absence | CSV | 520 | dédoublonné | - | **7** |
+| J4 → dim_formation | Excel | 266 | **28** | 85 valeurs | **238** |
+| J5 → fait_rh | DIM/* | 100 emp | - | agrégations | **100** |
+
+---
+
+## 🔑 Différences clés MySQL → PostgreSQL
+
+| Concept | MySQL | PostgreSQL |
+|---|---|---|
+| Auto-incrément | `AUTO_INCREMENT` | `SERIAL` |
+| Booléen | `TINYINT(1)` | `SMALLINT` ou `BOOLEAN` |
+| Décimal | `DECIMAL(10,2)` | `NUMERIC(10,2)` |
+| Ignorer doublons | `INSERT IGNORE` | `ON CONFLICT (...) DO NOTHING` |
+| Connexion Talend | `tMysqlConnection` | `tPostgresqlConnection` |
+| Input Talend | `tMysqlInput` | `tPostgresqlInput` |
+| Output Talend | `tMysqlOutput` | `tPostgresqlOutput` |
+| Row Talend | `tMysqlRow` | `tPostgresqlRow` |
+| Port | `3306` | `5432` |
+| Pas de `USE db` | `USE rh_dw;` | Connexion directe à la base |
 
 ---
 
@@ -567,22 +608,22 @@ Projet_SI_Decisionnels/
 │
 ├── Metadata/
 │   ├── Db Connections/
-│   │   ├── SRC_rh_entreprise   (MySQL source · port 3306)
-│   │   └── TGT_rh_dw           (MySQL cible  · port 3306)
+│   │   ├── SRC_rh_entreprise   (PostgreSQL source · port 5432)
+│   │   └── TGT_rh_dw           (PostgreSQL cible  · port 5432)
 │   └── File Delimited/
 │       └── schema_absences_csv
 │
 └── Contexts/
     └── Default
         ├── src_host     = localhost
-        ├── src_port     = 3306
+        ├── src_port     = 5432
         ├── src_db       = rh_entreprise
         ├── tgt_db       = rh_dw
-        ├── db_user      = root
+        ├── db_user      = postgres
         ├── db_password  = ****
         ├── csv_path     = C:/data/raw/absences_presences.csv
         └── xlsx_path    = C:/data/raw/formations.xlsx
 ```
 
-> 💡 Déclarer les chemins dans un **Context Group** permet de changer les sources
-> sans modifier chaque job — utile si tu travailles entre la maison et l'école.
+> 💡 Déclarer les paramètres dans un **Context Group** Talend permet de changer
+> host/port/password sans modifier chaque job - indispensable entre maison et école.
