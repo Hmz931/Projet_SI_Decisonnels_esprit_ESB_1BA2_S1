@@ -3,7 +3,7 @@
 > ESPRIT · 1BA2 · 2025–2026  
 > Deadline : 14 Mars 2026
 
-https://hmz931.github.io/Projet_SI_Decisonnels_esprit_ESB_1BA2_S1/
+[https://hmz931.github.io/Projet_SI_Decisonnels_esprit_ESB_1BA2_S1/](https://hmz931.github.io/Projet_SI_Decisonnels_esprit_ESB_1BA2_S1/)
 
 ## Contexte
 
