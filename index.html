@@ -1083,50 +1083,38 @@ function generateData() {
           dupes.push([...baseRows[Math.floor(Math.random() * baseRows.length)]]);
         const all = [...baseRows, ...dupes].sort(() => Math.random() - .5);
 
-        // Construction SheetJS
+        // Construction SheetJS — pas de styles (corruptent le fichier)
         const wsData = [header, ...all];
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-        // Largeurs colonnes
+        // Largeurs colonnes uniquement (supporté sans plugin style)
         ws['!cols'] = [
           {wch:14},{wch:14},{wch:16},{wch:14},{wch:20},
           {wch:36},{wch:12},{wch:8},{wch:11},{wch:14}
         ];
 
-        // Style header (cellules A1:J1) — fond bleu foncé, texte blanc, gras
-        const headerRange = XLSX.utils.decode_range('A1:J1');
-        for (let C = headerRange.s.c; C <= headerRange.e.c; C++) {
-          const cellAddr = XLSX.utils.encode_cell({ r: 0, c: C });
-          if (!ws[cellAddr]) continue;
-          ws[cellAddr].s = {
-            font:      { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 },
-            fill:      { fgColor: { rgb: '1F4E79' }, patternType: 'solid' },
-            alignment: { horizontal: 'center', vertical: 'center' }
-          };
-        }
-
-        // Feuille résumé par service
+        // Feuille résumé par service (valeurs calculées côté JS, pas de formules)
         const services = ["Informatique","Ressources Humaines","Finance","Marketing",
                           "Commercial","Logistique","Production","Qualité","Administration","Juridique"];
-        const wsResume = XLSX.utils.aoa_to_sheet([
-          ['Service','Nb Formations','Coût Total (DT)'],
-          ...services.map(s => [s,
-            { f: `COUNTIF(Formations!E:E,"${s}")` },
-            { f: `SUMIF(Formations!E:E,"${s}",Formations!I:I)` }
-          ])
-        ]);
+        const resumeRows = [['Service','Nb Formations','Coût Total (DT)']];
+        services.forEach(s => {
+          const lignes = all.filter(r => r[4] === s);
+          const nb   = lignes.length;
+          const cout = lignes.reduce((sum, r) => sum + (r[8] || 0), 0);
+          resumeRows.push([s, nb, cout]);
+        });
+        const wsResume = XLSX.utils.aoa_to_sheet(resumeRows);
         wsResume['!cols'] = [{wch:25},{wch:16},{wch:18}];
 
         XLSX.utils.book_append_sheet(wb, ws, 'Formations');
         XLSX.utils.book_append_sheet(wb, wsResume, 'Résumé par Service');
 
         // Export binaire ArrayBuffer → Blob
-        const wbOut  = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        generatedData.xl      = wbOut;
-        generatedData.xlIsRaw = true;   // flag pour downloadFile
+        const wbOut = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        generatedData.xl = wbOut;
 
-        document.getElementById('meta-xl').textContent = `${all.length} lignes · ${nDup} doublons · vrai .xlsx`;
+        document.getElementById('meta-xl').textContent = `${all.length} lignes · ${nDup} doublons · .xlsx`;
         document.getElementById('dl-xl').style.display = 'flex';
         log(`✅ Excel : ${all.length} lignes (${nDup} doublons) — 2 feuilles`, 'success');
       }
