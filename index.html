@@ -855,7 +855,7 @@ window.addEventListener('load', () => {
         </div>
         <div id="dl-xl" class="dl-btn" style="display:none" onclick="downloadFile('xl')">
           <span class="dl-icon">📊</span>
-          <div class="dl-info"><div class="dl-name">formations.xlsx (CSV format)</div><div class="dl-meta" id="meta-xl">—</div></div>
+          <div class="dl-info"><div class="dl-name">formations.xlsx</div><div class="dl-meta" id="meta-xl">—</div></div>
           <span class="dl-arrow">⬇</span>
         </div>
       </div>
@@ -1072,7 +1072,7 @@ function generateData() {
         all.forEach(r=>rows.push(r));
         const xlContent = rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
         generatedData.xl = xlContent;
-        document.getElementById('meta-xl').textContent = `${all.length} lignes · ${nDup} doublons · CSV (Excel-compatible)`;
+        document.getElementById('meta-xl').textContent = `${all.length} lignes · ${nDup} doublons · XLSX`;
         document.getElementById('dl-xl').style.display = 'flex';
         log(`✅ Excel/CSV : ${all.length} lignes (${nDup} doublons)`, 'success');
       }
@@ -1091,7 +1091,7 @@ function downloadFile(type) {
   const config = {
     csv: { data: generatedData.csv, name: 'absences_presences.csv', mime: 'text/csv' },
     sql: { data: generatedData.sql, name: 'employes_salaires.sql', mime: 'text/plain' },
-    xl:  { data: generatedData.xl,  name: 'formations.csv',        mime: 'text/csv' },
+    xl:  { data: generatedData.xl,  name: 'formations.xlsx',       mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
   };
   const c = config[type];
   if (!c || !c.data) return;
