@@ -71,7 +71,9 @@ J5_Load_FAIT_RH   ← EN DERNIER obligatoirement
 ## J0 - Job_InitialLoad
 
 **Rôle** : Créer les tables du DW dans PostgreSQL `rh_dw`, vérifier l'accès aux 3 sources.
+
 **Objectif** : Préparer l'environnement technique en initialisant la base de données cible et en vérifiant l'accessibilité de toutes les sources.
+
 **Description** : Ce job est le point d'entrée obligatoire du pipeline. Il établit la connexion à PostgreSQL, exécute le script DDL pour créer (si elles n'existent pas) les tables vides du schéma en étoile dans la base rh_dw (dimensions et faits). En parallèle, il vérifie que les trois fichiers sources (absences_presences.csv, formations.xlsx) sont présents et accessibles, garantissant ainsi que les jobs suivants ne rencontreront pas d'erreurs d'accès aux données brutes.
 
 > ⚠️ Créer manuellement les bases dans pgAdmin avant de lancer ce job :  
