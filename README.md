@@ -1,4 +1,4 @@
-# 🗄️ Entrepôt de Données RH — Projet SI Décisionnels
+# 🗄️ Entrepôt de Données RH - Projet SI Décisionnels
 
 <div align="center">
 
@@ -9,8 +9,8 @@
 ![License](https://img.shields.io/badge/License-MIT-cyan?style=flat-square)
 ![ESPRIT](https://img.shields.io/badge/ESPRIT-1BA2%20·%202025--2026-8b5cf6?style=flat-square)
 
-**Projet académique — Systèmes d'Information Décisionnels**  
-Enseignant : **Sofien Boutaib** · Deadline : **14 Mars 2026**
+**Projet académique - Systèmes d'Information Décisionnels**  
+Deadline : **14 Mars 2026**
 
 [🌐 Demo interactive](https://hmz931.github.io/Projet_SI_Decisonnels_esprit_ESB_1BA2_S1/) · [📊 Rapport Power BI](powerbi/) · [⚙️ Jobs Talend](talend/JOBS.md)
 
@@ -45,7 +45,7 @@ Une entreprise souhaite **centraliser les données RH de ses 100 employés** afi
 
 ---
 
-## ⭐ Modélisation — Schéma en Étoile
+## ⭐ Modélisation - Schéma en Étoile
 
 ```
                     ┌─────────────────┐
@@ -80,13 +80,13 @@ Une entreprise souhaite **centraliser les données RH de ses 100 employés** afi
 
 ---
 
-## ⚙️ Pipeline ETL — Jobs Talend
+## ⚙️ Pipeline ETL - Jobs Talend
 
 | Job | Source → Cible | Entrée | Sortie | Anomalies traitées |
 |---|---|---|---|---|
-| `J0_InitialLoad` | — → PostgreSQL `rh_dw` | — | Schéma créé | DDL complet + vérification sources |
+| `J0_InitialLoad` | - → PostgreSQL `rh_dw` | - | Schéma créé | DDL complet + vérification sources |
 | `J1_Load_DIM_EMPLOYE` | SQL → dim_employe + dim_service | 112 inserts | **100 + 10** | 12 doublons casse · 30 NULLs |
-| `J2_Load_DIM_TEMPS` | Générée → dim_temps | — | **1 096** | Calendrier complet 2022→2024 |
+| `J2_Load_DIM_TEMPS` | Générée → dim_temps | - | **1 096** | Calendrier complet 2022→2024 |
 | `J3_Load_DIM_ABSENCE` | CSV → dim_absence + dim_motif | 582 lignes | **520 + 7** | 62 doublons · 157 NULLs |
 | `J4_Load_DIM_FORMATION` | Excel → dim_formation | 266 lignes | **238** | 28 doublons · 85 NULLs |
 | `J5_Load_FAIT_RH` | DIM/* + salaires → fait_rh | 100 emp | **100** | Agrégations + calculs |
@@ -99,10 +99,10 @@ Une entreprise souhaite **centraliser les données RH de ses 100 employés** afi
 
 Le rapport décisionnel connecté à la base `rh_dw` (PostgreSQL) contient 4 pages :
 
-- **Vue Générale RH** — KPIs, masse salariale, répartition par service
-- **Analyse des Absences** — motifs, jours perdus, top employés absents
-- **Analyse des Formations** — coûts, statuts, évolution par année et service
-- **Profil Employé** — fiche individuelle (drill-through par matricule)
+- **Vue Générale RH** - KPIs, masse salariale, répartition par service
+- **Analyse des Absences** - motifs, jours perdus, top employés absents
+- **Analyse des Formations** - coûts, statuts, évolution par année et service
+- **Profil Employé** - fiche individuelle (drill-through par matricule)
 
 📁 Fichier : [`powerbi/rapport_RH.pbix`](powerbi/rapport_RH.pbix)
 
@@ -140,11 +140,11 @@ Le rapport décisionnel connecté à la base `rh_dw` (PostgreSQL) contient 4 pag
 
 | Outil | Version | Usage |
 |---|---|---|
-| **Talend Open Studio** | DI | Pipeline ETL — 6 jobs |
+| **Talend Open Studio** | DI | Pipeline ETL - 6 jobs |
 | **PostgreSQL** | 18 | Base source `rh_entreprise` + DW `rh_dw` |
 | **pgAdmin** | 4 | Administration des bases |
-| **Power BI Desktop** | — | Rapport décisionnel |
-| **HTML / JS / SheetJS** | — | Dashboard interactif de visualisation |
+| **Power BI Desktop** | - | Rapport décisionnel |
+| **HTML / JS / SheetJS** | - | Dashboard interactif de visualisation |
 
 ---
 

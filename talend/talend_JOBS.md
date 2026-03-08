@@ -1,8 +1,8 @@
-# ⚙️ Documentation Technique Complète — Jobs Talend ETL
+# ⚙️ Documentation Technique Complète - Jobs Talend ETL
 ## Projet SI Décisionnels · Entrepôt de Données RH
 
-> **Auteurs** : Hamza Bouguerra · Fares Messedi — ESPRIT 1BA2  
-> **Enseignant** : Sofien Boutaib | **Deadline** : 14 Mars 2026  
+> **Auteurs** : Hamza Bouguerra · Fares Messedi - ESPRIT 1BA2  
+> **Deadline** : 14 Mars 2026  
 > **ETL** : Talend Open Studio for Data Integration  
 > **SGBD** : PostgreSQL 18 (pgAdmin 4)  
 > **Base source** : `rh_entreprise` | **Base cible** : `rh_dw`
@@ -42,7 +42,7 @@
 
 ## 📁 Analyse Détaillée des Sources Réelles
 
-### Source 1 — PostgreSQL `rh_entreprise` : table `employes`
+### Source 1 - PostgreSQL `rh_entreprise` : table `employes`
 
 **Structure de la table :**
 ```sql
@@ -94,7 +94,7 @@ EMP046 → 'Luxorin'  vs 'LUXORIN'     EMP100 → 'Calvera'  vs 'CALVERA'
 
 ---
 
-### Source 2 — PostgreSQL `rh_entreprise` : table `salaires`
+### Source 2 - PostgreSQL `rh_entreprise` : table `salaires`
 
 **Structure de la table :**
 ```sql
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS salaires (
 
 ---
 
-### Source 3 — `absences_presences.csv`
+### Source 3 - `absences_presences.csv`
 
 **Structure (séparateur `;`) :**
 ```
@@ -154,7 +154,7 @@ ABS0365 ; EMP069 ; 2022-09-23 ;                     ; 6 ; Oui ;  ← motif vide
 | NULL / vide motif | **54** (9.3%) |
 | NULL / vide duree_jours | **50** (8.6%) |
 | NULL / vide justifie | **53** (9.1%) |
-| Colonne remarque | **582 vides** — à ignorer |
+| Colonne remarque | **582 vides** - à ignorer |
 | Plage de dates | 2022-01-02 → 2024-12-27 |
 | Durées possibles (jours) | 1 · 2 · 3 · 4 · 5 · 6 · 7 · 8 · 9 · 10 |
 | Matricules distincts | 86 employés concernés |
@@ -175,7 +175,7 @@ ABS0365 ; EMP069 ; 2022-09-23 ;                     ; 6 ; Oui ;  ← motif vide
 
 ---
 
-### Source 4 — `formations.xlsx` (feuille `Formations`)
+### Source 4 - `formations.xlsx` (feuille `Formations`)
 
 **Structure Excel :**
 ```
@@ -231,7 +231,7 @@ J5_Load_FAIT_RH          ← obligatoirement EN DERNIER
 
 ---
 
-## J0 — Job_InitialLoad
+## J0 - Job_InitialLoad
 
 **Rôle :** Créer toutes les tables du DW dans PostgreSQL `rh_dw`.
 
@@ -259,14 +259,14 @@ J5_Load_FAIT_RH          ← obligatoirement EN DERNIER
   Exécute le DDL PostgreSQL ci-dessous
         ↓
 [tLogRow]
-  "[OK] Schéma rh_dw créé — {timestamp}"
+  "[OK] Schéma rh_dw créé - {timestamp}"
 ```
 
 ### Script DDL PostgreSQL complet
 
 ```sql
 -- ═══════════════════════════════════════════════════════
--- SCHÉMA DU DATA WAREHOUSE RH — PostgreSQL
+-- SCHÉMA DU DATA WAREHOUSE RH - PostgreSQL
 -- Projet SI Décisionnels · ESPRIT 1BA2 · 2025-2026
 -- ═══════════════════════════════════════════════════════
 
@@ -361,7 +361,7 @@ CREATE TABLE IF NOT EXISTS fait_rh (
 
 ---
 
-## J1 — Job_Load_DIM_EMPLOYE
+## J1 - Job_Load_DIM_EMPLOYE
 
 **Source :** PostgreSQL `rh_entreprise` → tables `employes` + `salaires`  
 **Cibles :** `dim_employe` + `dim_service` dans `rh_dw`
@@ -388,12 +388,12 @@ NULLs colonne employes :
 ### Flux Talend
 
 ```
-[tPostgresqlConnection — rh_entreprise]
+[tPostgresqlConnection - rh_entreprise]
         ↓
 [tPostgresqlInput]
   Query : SELECT * FROM employes
         ↓
-[tMap — 1. Normalisation de la casse]
+[tMap - 1. Normalisation de la casse]
   nom    → StringHandling.UPCASE(StringHandling.TRIM(row.nom))
   prenom → StringHandling.UPCASE_FIRST_LOWER(StringHandling.TRIM(row.prenom))
         ↓
@@ -401,12 +401,12 @@ NULLs colonne employes :
   Clé de déduplication : matricule
   Flux rejeté → [tLogRow] "DOUBLON éliminé : {matricule} · {nom}"
         ↓
-[tMap — 2. Corrections NULL + séparation flux]
+[tMap - 2. Corrections NULL + séparation flux]
   Flux 1 ──→ [tPostgresqlOutput] dim_employe   (INSERT)
   Flux 2 ──→ [tPostgresqlOutput] dim_service   (INSERT + ON CONFLICT DO NOTHING)
 ```
 
-### Expressions tMap — Flux 1 (dim_employe)
+### Expressions tMap - Flux 1 (dim_employe)
 
 ```java
 out1.matricule        = row.matricule
@@ -420,14 +420,14 @@ out1.email            = (row.email == null || row.email.isEmpty())
                         ? "non-renseigne@entreprise.tn" : row.email
 ```
 
-### Expressions tMap — Flux 2 (dim_service)
+### Expressions tMap - Flux 2 (dim_service)
 
 ```java
 out2.nom_service = row.service
 // ON CONFLICT (nom_service) DO NOTHING → 10 services uniques chargés
 ```
 
-### Configuration tPostgresqlOutput — dim_service
+### Configuration tPostgresqlOutput - dim_service
 
 ```
 Action          : Insert
@@ -446,9 +446,9 @@ Gestion conflit : ON CONFLICT (nom_service) DO NOTHING
 
 ---
 
-## J2 — Job_Load_DIM_TEMPS
+## J2 - Job_Load_DIM_TEMPS
 
-**Source :** Générée programmatiquement — aucun fichier requis  
+**Source :** Générée programmatiquement - aucun fichier requis  
 **Cible :** `dim_temps`  
 **Période :** 2022-01-01 → 2024-12-31 *(couvre toutes les dates des 3 sources)*
 
@@ -462,14 +462,14 @@ Gestion conflit : ON CONFLICT (nom_service) DO NOTHING
 [tFlowToIterate]
   Génère une ligne par jour de la plage
         ↓
-[tMap — Calcul des attributs temporels]
+[tMap - Calcul des attributs temporels]
         ↓
-[tPostgresqlOutput — dim_temps]
+[tPostgresqlOutput - dim_temps]
   Action  : INSERT
   Conflit : ON CONFLICT (date_complete) DO NOTHING  ← idempotent
 ```
 
-### Expressions tMap — Calcul des attributs
+### Expressions tMap - Calcul des attributs
 
 ```java
 import java.util.Calendar;
@@ -509,11 +509,11 @@ out.est_weekend   = (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
 ### Résultat attendu
 - **1 096 lignes** dans dim_temps (3 ans : 365 + 365 + 366 jours)
 
-> 💡 Ce job est **indépendant** — il peut tourner en parallèle de J1.
+> 💡 Ce job est **indépendant** - il peut tourner en parallèle de J1.
 
 ---
 
-## J3 — Job_Load_DIM_ABSENCE
+## J3 - Job_Load_DIM_ABSENCE
 
 **Source :** `data/raw/absences_presences.csv` (séparateur `;`, encodage UTF-8)  
 **Cibles :** `dim_absence` + `dim_motif_absence`
@@ -566,13 +566,13 @@ Valeurs justifie : 'Oui' (529) · vide (53)
 |---|---|---|---|---|
 | id_absence | id_absence | String | 10 | charger |
 | matricule | matricule | String | 10 | charger |
-| date_absence | date_absence | Date | — | format : `yyyy-MM-dd` |
+| date_absence | date_absence | Date | - | format : `yyyy-MM-dd` |
 | motif | motif | String | 50 | corriger (tReplaceList) |
-| duree_jours | duree_jours | Integer | — | corriger (NULL→0) |
+| duree_jours | duree_jours | Integer | - | corriger (NULL→0) |
 | justifie | justifie | String | 15 | corriger (tReplaceList) |
-| remarque | remarque | String | — | **ne pas mapper en sortie** |
+| remarque | remarque | String | - | **ne pas mapper en sortie** |
 
-### Expressions tMap — Flux 1 (dim_absence)
+### Expressions tMap - Flux 1 (dim_absence)
 
 ```java
 out1.id_absence   = row.id_absence
@@ -583,7 +583,7 @@ out1.duree_jours  = (row.duree_jours == null) ? 0 : row.duree_jours
 out1.justifie     = row.justifie   // déjà corrigé par tReplaceList
 ```
 
-### Expressions tMap — Flux 2 (dim_motif_absence)
+### Expressions tMap - Flux 2 (dim_motif_absence)
 
 ```java
 // Catégorisation métier des motifs
@@ -598,7 +598,7 @@ out2.categorie = m.equals("Maladie") || m.equals("Accident de travail")
                : "Autre";
 ```
 
-### dim_motif_absence — Contenu attendu
+### dim_motif_absence - Contenu attendu
 
 | sk_motif | motif | categorie |
 |---|---|---|
@@ -615,13 +615,13 @@ out2.categorie = m.equals("Maladie") || m.equals("Accident de travail")
 | Table | Entrée | Sortie |
 |---|---|---|
 | dim_absence | 582 lignes | **520 lignes** |
-| dim_motif_absence | — | **7 lignes** |
+| dim_motif_absence | - | **7 lignes** |
 
 ---
 
-## J4 — Job_Load_DIM_FORMATION
+## J4 - Job_Load_DIM_FORMATION
 
-**Source :** `data/raw/formations.xlsx` — feuille `Formations`  
+**Source :** `data/raw/formations.xlsx` - feuille `Formations`  
 **Cible :** `dim_formation`
 
 ### Anomalies réelles à traiter
@@ -653,9 +653,9 @@ Statuts : Complétée (77) · En cours (89) · Planifiée (70) · NULL (30→"In
   Clé            : id_formation
   Flux rejeté    → [tLogRow] "DOUBLON Excel éliminé : {id_formation}"
         ↓
-[tMap — Corrections NULL]
+[tMap - Corrections NULL]
         ↓
-[tPostgresqlOutput — dim_formation]
+[tPostgresqlOutput - dim_formation]
   Action : INSERT
 ```
 
@@ -669,9 +669,9 @@ Statuts : Complétée (77) · En cours (89) · Planifiée (70) · NULL (30→"In
 | Prénom | prenom | String | 50 |
 | Service | service | String | 50 |
 | Intitulé | intitule | String | 100 |
-| Durée (h) | duree_heures | Integer | — |
-| Année | annee | Integer | — |
-| Coût (DT) | cout | Double | — |
+| Durée (h) | duree_heures | Integer | - |
+| Année | annee | Integer | - |
+| Coût (DT) | cout | Double | - |
 | Statut | statut | String | 20 |
 
 ### Expressions tMap
@@ -695,9 +695,9 @@ out.statut       = (row.statut == null || row.statut.isEmpty())
 
 ---
 
-## J5 — Job_Load_FAIT_RH
+## J5 - Job_Load_FAIT_RH
 
-**⚠️ À exécuter OBLIGATOIREMENT EN DERNIER — J1 à J4 doivent être terminés**  
+**⚠️ À exécuter OBLIGATOIREMENT EN DERNIER - J1 à J4 doivent être terminés**  
 **Sources :** Toutes les tables DIM de `rh_dw` + table `salaires` de `rh_entreprise`  
 **Cible :** `fait_rh`
 
@@ -713,18 +713,18 @@ La table de faits contient **1 ligne par employé**. Pour chaque employé dans `
 ### Flux Talend
 
 ```
-[tPostgresqlInput — dim_employe]    ← flux principal
+[tPostgresqlInput - dim_employe]    ← flux principal
         ↓
 [tMap central]
   ├── lookup dim_service            → sk_service  (par nom_service)
   ├── lookup agg_absences           → nb_jours_absence, nb_absences
   └── lookup agg_formations         → nb_formations
         ↓
-[tPostgresqlOutput — fait_rh] INSERT
+[tPostgresqlOutput - fait_rh] INSERT
 
 ─── Sous-flux préalables (tHashOutput) ─────────────────────────────────
 
-[tPostgresqlInput — rh_entreprise.salaires]
+[tPostgresqlInput - rh_entreprise.salaires]
   SELECT matricule,
          AVG(salaire_mensuel) AS salaire_moy,
          SUM(prime)           AS prime_totale
@@ -732,7 +732,7 @@ La table de faits contient **1 ligne par employé**. Pour chaque employé dans `
   GROUP BY matricule
   → [tHashOutput "hash_salaires"]
 
-[tPostgresqlInput — dim_absence]
+[tPostgresqlInput - dim_absence]
   SELECT matricule,
          SUM(duree_jours) AS nb_jours_absence,
          COUNT(*)         AS nb_absences
@@ -740,14 +740,14 @@ La table de faits contient **1 ligne par employé**. Pour chaque employé dans `
   GROUP BY matricule
   → [tHashOutput "hash_absences"]
 
-[tPostgresqlInput — dim_formation]
+[tPostgresqlInput - dim_formation]
   SELECT matricule,
          COUNT(*) AS nb_formations
   FROM dim_formation
   GROUP BY matricule
   → [tHashOutput "hash_formations"]
 
-[tPostgresqlInput — dim_service]
+[tPostgresqlInput - dim_service]
   SELECT sk_service, nom_service
   FROM dim_service
   → [tHashOutput "hash_service"]
@@ -818,12 +818,12 @@ out.nb_formations    = (frm.nb_formations == null)
 | Job | Source | Lignes entrée | Doublons éliminés | NULLs corrigés | Lignes chargées |
 |---|---|---|---|---|---|
 | J1 → dim_employe | SQL (employes) | 112 | **12** (casse) | 30 valeurs | **100** |
-| J1 → dim_service | SQL (employes) | 100 | dédoublonné | — | **10** |
-| J2 → dim_temps | générée | — | — | — | **1 096** |
+| J1 → dim_service | SQL (employes) | 100 | dédoublonné | - | **10** |
+| J2 → dim_temps | générée | - | - | - | **1 096** |
 | J3 → dim_absence | CSV (582) | 582 | **62** exacts | 157 valeurs | **520** |
-| J3 → dim_motif_absence | CSV motifs | — | dédoublonné | — | **7** |
+| J3 → dim_motif_absence | CSV motifs | - | dédoublonné | - | **7** |
 | J4 → dim_formation | Excel (266) | 266 | **28** exacts | 85 valeurs | **238** |
-| J5 → fait_rh | DIM/* + salaires | 100 emp | — | agrégations | **100** |
+| J5 → fait_rh | DIM/* + salaires | 100 emp | - | agrégations | **100** |
 
 ---
 
@@ -877,5 +877,5 @@ Projet_SI_Decisionnels/       ← nom du projet dans Talend
 ```
 
 > 💡 **Conseil :** Utiliser un **Context Group** Talend pour centraliser tous les paramètres.
-> Cela permet de changer host/port/password en un seul endroit — indispensable
+> Cela permet de changer host/port/password en un seul endroit - indispensable
 > si tu travailles entre ta machine à la maison et les postes de l'école.
