@@ -5,7 +5,7 @@
 > **Auteurs** : Hamza Bouguerra · Fares Messedi - ESPRIT 1BA2  
 > **Deadline** : 14 Mars 2026  
 > **Outil** : Talend Open Studio for Data Integration  
-> **Base source** : PostgreSQL `rh_entreprise` (port 5432) +  `absences_presences.csv` + `formations.xlsx`
+> **Base source** : PostgreSQL `rh_entreprise` (port 5432), `absences_presences.csv` et `formations.xlsx`
 > **Base cible** : PostgreSQL `rh_dw` (port 5432)
 
 ---
