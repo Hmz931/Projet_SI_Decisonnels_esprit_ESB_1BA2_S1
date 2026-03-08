@@ -1,305 +1,417 @@
-# ⚙️ Documentation Détaillée des Jobs Talend
-## Projet SI Décisionnels — Entrepôt de Données RH
+# ⚙️ Documentation Technique Complète des Jobs Talend
 
-**Projet** : Entrepôt de données pour l’analyse RH  
-**Auteurs** : Hamza Bouguerra · Fares Messedi  
-**Niveau / Groupe** : ESPRIT — 1BA2 — Systèmes d’Information Décisionnels  
-**Année universitaire** : 2025–2026  
-**Date limite** : 14 mars 2026  
+## Projet SI Décisionnels --- Data Warehouse RH
 
-**Outil ETL** : Talend Open Studio for Data Integration  
+**Projet :** Entrepôt de données pour l'analyse RH\
+**Auteurs :** Hamza Bouguerra · Fares Messedi\
+**École :** ESPRIT\
+**Module :** Systèmes d'Information Décisionnels\
+**Année :** 2025--2026
 
-## Sources de données
-- PostgreSQL **rh_entreprise**
-- `absences_presences.csv`
-- `formations.xlsx`
+**Outil ETL :** Talend Open Studio for Data Integration\
+**SGBD :** PostgreSQL
 
-## Base cible
-PostgreSQL **rh_dw**
+------------------------------------------------------------------------
 
----
+# 1. Architecture globale du système
 
-# 📋 Table des matières
+Le pipeline ETL suit une architecture classique en trois couches :
 
-1. Architecture globale
-2. Analyse des sources
-3. Ordre d’exécution des jobs
-4. Description détaillée des jobs Talend
-5. Modèle de données cible
-6. Résumé quantitatif
-7. Gestion des erreurs
-8. Structure du projet Talend
+1.  **Sources opérationnelles**
+2.  **Zone de transformation (Talend)**
+3.  **Data Warehouse décisionnel**
 
----
-
-# 🏗️ Architecture générale
-
+```{=html}
+<!-- -->
 ```
-        ┌─────────────────────────────┐
-        │        SOURCES DATA         │
-        │                             │
-        │ PostgreSQL rh_entreprise    │
-        │   • employes                │
-        │   • salaires                │
-        │                             │
-        │ absences_presences.csv      │
-        │ formations.xlsx             │
-        └─────────────┬───────────────┘
-                      │
-                      ▼
-        ┌─────────────────────────────┐
-        │        STAGING TALEND       │
-        │                             │
-        │ Nettoyage données           │
-        │ Normalisation texte         │
-        │ Suppression doublons        │
-        │ Correction valeurs NULL     │
-        └─────────────┬───────────────┘
-                      │
-                      ▼
-        ┌─────────────────────────────┐
-        │      DATA WAREHOUSE         │
-        │         rh_dw               │
-        │                             │
-        │ Dimensions :                │
-        │ dim_employe                 │
-        │ dim_service                 │
-        │ dim_temps                   │
-        │ dim_absence                 │
-        │ dim_motif_absence           │
-        │ dim_formation               │
-        │                             │
-        │ Table de faits :            │
-        │ fait_rh                     │
-        └─────────────────────────────┘
+    Sources → Nettoyage → Transformation → Chargement DW
+
+Sources utilisées :
+
+-   Base PostgreSQL `rh_entreprise`
+-   Fichier CSV `absences_presences.csv`
+-   Fichier Excel `formations.xlsx`
+
+Base cible :
+
+    rh_dw
+
+------------------------------------------------------------------------
+
+# 2. Modèle en étoile du Data Warehouse
+
+## Dimensions
+
+-   dim_employe
+-   dim_service
+-   dim_temps
+-   dim_absence
+-   dim_motif_absence
+-   dim_formation
+
+## Table de faits
+
+    fait_rh
+
+Cette table permet d'analyser :
+
+-   salaires
+-   absences
+-   formations
+-   indicateurs RH
+
+------------------------------------------------------------------------
+
+# 3. Ordre d'exécution des Jobs Talend
+
+    J0_InitialLoad
+          ↓
+    J1_Load_DIM_EMPLOYE
+    J2_Load_DIM_TEMPS
+          ↓
+    J3_Load_DIM_ABSENCE
+    J4_Load_DIM_FORMATION
+          ↓
+    J5_Load_FAIT_RH
+
+Le job **J5 doit être exécuté en dernier** car il dépend des dimensions.
+
+------------------------------------------------------------------------
+
+# 4. Job J0 --- Initialisation du Data Warehouse
+
+## Objectif
+
+Créer les tables du Data Warehouse dans PostgreSQL.
+
+## Composants Talend
+
+    tPostgresqlConnection
+            ↓
+    tPostgresqlRow
+            ↓
+    tLogRow
+
+## Script SQL exécuté
+
+``` sql
+CREATE TABLE dim_service (
+id_service SERIAL PRIMARY KEY,
+nom_service VARCHAR(100)
+);
+
+CREATE TABLE dim_employe (
+id_employe SERIAL PRIMARY KEY,
+matricule INT,
+nom VARCHAR(100),
+poste VARCHAR(100),
+ville VARCHAR(100),
+email VARCHAR(150),
+telephone VARCHAR(30),
+id_service INT
+);
+
+CREATE TABLE dim_temps (
+id_temps SERIAL PRIMARY KEY,
+date_complete DATE,
+jour INT,
+mois INT,
+annee INT,
+trimestre INT,
+semaine INT,
+nom_jour VARCHAR(20),
+nom_mois VARCHAR(20),
+weekend BOOLEAN
+);
+
+CREATE TABLE dim_motif_absence (
+id_motif SERIAL PRIMARY KEY,
+motif VARCHAR(100)
+);
+
+CREATE TABLE dim_absence (
+id_absence SERIAL PRIMARY KEY,
+matricule INT,
+date_absence DATE,
+duree_jours INT,
+justifie VARCHAR(20),
+id_motif INT
+);
+
+CREATE TABLE dim_formation (
+id_formation SERIAL PRIMARY KEY,
+matricule INT,
+nom_formation VARCHAR(200),
+duree_heures INT,
+cout DECIMAL,
+statut VARCHAR(50)
+);
+
+CREATE TABLE fait_rh (
+id_fait SERIAL PRIMARY KEY,
+id_employe INT,
+id_service INT,
+salaire_mensuel NUMERIC,
+salaire_annuel NUMERIC,
+nb_jours_absence INT,
+nb_formations INT
+);
 ```
 
----
+------------------------------------------------------------------------
 
-# 📁 Analyse des sources de données
+# 5. Job J1 --- Chargement dimension employés
 
-### employes_salaires.sql
-| Indicateur | Valeur |
-|---|---|
-| Table employes | **112** (dont 12 doublons) |
-| Table salaires | **1200** (100 emp × 12 mois) |
-| NULL poste | **14** |
-| NULL date_embauche | **7** |
-| NULL ville | **9** |
-| Salaire min/max/moy | 815 DT / 4445 DT / 2592 DT |
-| Primes possibles | 0 · 100 · 150 · 200 · 300 DT |
-| Services distincts | 10 |
+## Source
 
----
+PostgreSQL :
 
-## Fichier `absences_presences.csv`
+    rh_entreprise.employes
 
-| Indicateur | Valeur |
-|---|---|
-| Total lignes | **582** |
-| Doublons exacts | **123** (21.1%) |
-| NULL motif | **54** (9.3%) |
-| NULL duree_jours | **50** (8.6%) |
-| NULL justifie | **53** (9.1%) |
-| Colonne remarque | **582 vides** → à ignorer |
-| Matricules distincts | 86 employés concernés |
-| Plage de dates | 2022-01-02 → 2024-12-27 |
-| Motifs existants | Accident de travail · Congé annuel · Congé sans solde · Formation · Maladie · Maternité/Paternité |
+## Flux Talend
 
----
+    tPostgresqlInput
+            ↓
+    tMap (nettoyage)
+            ↓
+    tUniqRow (suppression doublons)
+            ↓
+    tPostgresqlOutput (dim_employe)
 
-## Fichier `formations.xlsx`
+## Requête SQL source
 
-| Indicateur | Valeur |
-|---|---|
-| Total lignes | **266** |
-| Doublons exacts | **54** (20.3%) |
-| NULL Coût (DT) | **31** (11.7%) |
-| NULL Statut | **30** (11.3%) |
-| NULL Durée (h) | **24** (9.0%) |
-| Formations distinctes | 16 intitulés |
-| Années couvertes | 2022 · 2023 · 2024 |
-| Coût min/max/moy | 500 / 2000 / 1176 DT |
-| Durées possibles (h) | 8 · 16 · 20 · 24 · 32 · 40 |
-| Statuts | Complétée (77) · En cours (89) · Planifiée (70) · NULL (30) |
-
-
----
-
-# ⚡ Ordre d’exécution des jobs
-
-```
-J0_InitialLoad
-      ↓
-J1_Load_DIM_EMPLOYE ──┐
-J2_Load_DIM_TEMPS   ──┘
-      ↓
-J3_Load_DIM_ABSENCE
-J4_Load_DIM_FORMATION
-      ↓
-J5_Load_FAIT_RH
+``` sql
+SELECT *
+FROM employes;
 ```
 
-Le job **J5 doit être exécuté en dernier**.
+## Nettoyage des données (tMap)
 
----
+### Gestion des NULL
 
-# 🧩 Description des Jobs Talend
+    poste → "Non renseigné"
+    ville → "Non renseignée"
+    email → "non-renseigne@entreprise.tn"
+    telephone → "Non renseigné"
 
-## J0 — Job_InitialLoad
+Expression Talend :
 
-### Objectif
-Initialiser la base `rh_dw` et créer les tables du Data Warehouse.
+    row1.poste == null ? "Non renseigné" : row1.poste
 
-### Composants Talend
-- tPostgresqlConnection
-- tFileCheck
-- tPostgresqlRow
-- tLogRow
-- tDie
+### Suppression des doublons
 
----
+Composant :
 
-## J1 — Job_Load_DIM_EMPLOYE
+    tUniqRow
+    clé = matricule
 
-### Source
-PostgreSQL `rh_entreprise`  
-table `employes`
+## Chargement de dim_service
 
-### Objectif
-Créer :
-- dim_employe
-- dim_service
+Requête utilisée :
 
-### Nettoyage
+``` sql
+INSERT INTO dim_service(nom_service)
+SELECT DISTINCT service
+FROM employes;
+```
 
-| Colonne | Correction |
-|---|---|
-| poste | "Non renseigné" |
-| ville | "Non renseignée" |
-| email | "non-renseigne@entreprise.tn" |
-| telephone | "Non renseigné" |
+------------------------------------------------------------------------
 
-### Résultat
+# 6. Job J2 --- Création de la dimension temps
 
-| Table | Lignes |
-|---|---|
-| dim_employe | 100 |
-| dim_service | 10 |
+## Objectif
 
----
+Créer un calendrier complet entre **2022 et 2024**.
 
-## J2 — Job_Load_DIM_TEMPS
+## Composants Talend
 
-### Objectif
-Créer une dimension calendrier couvrant **2022 → 2024**.
+    tRowGenerator
+            ↓
+    tMap
+            ↓
+    tPostgresqlOutput
 
-### Attributs générés
-- date_complete
-- jour
-- mois
-- année
-- trimestre
-- semaine
-- nom_jour
-- nom_mois
-- weekend
+## Colonnes générées
 
-### Résultat
-**1096 lignes**
+-   date_complete
+-   jour
+-   mois
+-   annee
+-   trimestre
+-   semaine
+-   nom_jour
+-   nom_mois
+-   weekend
 
----
+### Expression weekend
 
-## J3 — Job_Load_DIM_ABSENCE
+    TalendDate.getPartOfDate("DAY_OF_WEEK",row1.date)==1
+    || TalendDate.getPartOfDate("DAY_OF_WEEK",row1.date)==7
 
-### Source
-`absences_presences.csv`
+Nombre total de lignes générées :
 
-### Nettoyage
+    1096
 
-| Problème | Correction |
-|---|---|
-| doublons | supprimés |
-| motif NULL | "Non précisé" |
-| duree_jours NULL | 0 |
-| justifie NULL | "Non renseigné" |
-| remarque | ignorée |
+------------------------------------------------------------------------
 
-### Résultat
+# 7. Job J3 --- Chargement des absences
 
-| Table | Lignes |
-|---|---|
-| dim_absence | 520 |
-| dim_motif_absence | 7 |
+## Source
 
----
+    absences_presences.csv
 
-## J4 — Job_Load_DIM_FORMATION
+## Composants
 
-### Source
-`formations.xlsx`
+    tFileInputDelimited
+            ↓
+    tMap
+            ↓
+    tUniqRow
+            ↓
+    tPostgresqlOutput
 
-### Nettoyage
+## Nettoyage
 
-| Problème | Correction |
-|---|---|
-| doublons | supprimés |
-| coût NULL | 0 |
-| statut NULL | "Inconnu" |
-| durée NULL | 0 |
+  Problème        Solution
+  --------------- -----------------
+  doublons        tUniqRow
+  motif NULL      "Non précisé"
+  duree NULL      0
+  justifie NULL   "Non renseigné"
 
-### Résultat
-**238 lignes dans dim_formation**
+Expression Talend :
 
----
+    row1.motif == null ? "Non précisé" : row1.motif
 
-## J5 — Job_Load_FAIT_RH
+### Création dimension motif
 
-### Objectif
-Créer la table de faits RH.
+    SELECT DISTINCT motif
+    FROM absences_presences;
 
-### Sources
-- dim_employe
-- dim_service
-- dim_absence
-- dim_formation
-- salaires
+------------------------------------------------------------------------
 
-### Mesures calculées
+# 8. Job J4 --- Chargement des formations
 
-| Mesure | Calcul |
-|---|---|
-| salaire_mensuel | moyenne salaires |
-| salaire_annuel | salaire_mensuel × 12 |
-| nb_jours_absence | somme duree_jours |
-| nb_formations | count formations |
+## Source
 
-### Résultat
-**100 lignes (1 par employé)**
+    formations.xlsx
 
----
+## Composants
 
-# 🗄️ Modèle de données cible
+    tFileInputExcel
+            ↓
+    tMap
+            ↓
+    tUniqRow
+            ↓
+    tPostgresqlOutput
 
-Dimensions :
-- dim_employe
-- dim_service
-- dim_temps
-- dim_absence
-- dim_motif_absence
-- dim_formation
+## Nettoyage
 
-Table de faits :
-- fait_rh
+  Problème      Correction
+  ------------- ------------
+  coût NULL     0
+  statut NULL   "Inconnu"
+  durée NULL    0
 
----
+Expression Talend :
 
-# 📊 Résumé quantitatif
+    row1.cout == null ? 0 : row1.cout
 
-| Job | Source | Entrée | Sortie |
-|---|---|---|---|
-| J1 | employes | 112 | 100 |
-| J2 | calendrier | — | 1096 |
-| J3 | CSV absences | 582 | 520 |
-| J4 | Excel formations | 266 | 238 |
-| J5 | dimensions | 100 | 100 |
+------------------------------------------------------------------------
+
+# 9. Job J5 --- Chargement de la table de faits
+
+## Sources
+
+-   dim_employe
+-   dim_service
+-   dim_absence
+-   dim_formation
+-   salaires
+
+## Flux Talend
+
+    tPostgresqlInput (employes)
+            ↓
+    tMap (jointures)
+            ↓
+    tAggregateRow
+            ↓
+    tPostgresqlOutput (fait_rh)
+
+## Calculs
+
+### Salaire mensuel
+
+    AVG(salaire)
+
+### Salaire annuel
+
+    salaire_mensuel * 12
+
+### Nombre de jours d'absence
+
+    SUM(duree_jours)
+
+### Nombre de formations
+
+    COUNT(id_formation)
+
+------------------------------------------------------------------------
+
+# 10. Gestion des erreurs
+
+Talend utilise :
+
+    tLogRow
+    tDie
+    Reject Flow
+
+Exemples :
+
+-   fichier introuvable
+-   erreur de type
+-   clé étrangère inexistante
+
+------------------------------------------------------------------------
+
+# 11. Structure du projet Talend
+
+    RH_DW_PROJECT
+    │
+    ├── Job Designs
+    │   ├── J0_InitialLoad
+    │   ├── J1_Load_DIM_EMPLOYE
+    │   ├── J2_Load_DIM_TEMPS
+    │   ├── J3_Load_DIM_ABSENCE
+    │   ├── J4_Load_DIM_FORMATION
+    │   └── J5_Load_FAIT_RH
+    │
+    ├── Metadata
+    │   ├── PostgreSQL connections
+    │   ├── CSV files
+    │   └── Excel files
+
+------------------------------------------------------------------------
+
+# 12. Résumé des volumes
+
+  Job   Source       Entrée   Sortie
+  ----- ------------ -------- --------
+  J1    employes     112      100
+  J2    calendrier   \-       1096
+  J3    absences     582      520
+  J4    formations   266      238
+  J5    dimensions   100      100
+
+------------------------------------------------------------------------
+
+# Conclusion
+
+Ce pipeline ETL permet :
+
+-   l'intégration de données multi-sources
+-   le nettoyage automatique
+-   la création d'un Data Warehouse RH
+-   l'analyse décisionnelle (absences, formations, salaires).
