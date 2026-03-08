@@ -91,7 +91,7 @@ Une entreprise souhaite **centraliser les données RH de ses 100 employés** afi
 | `J4_Load_DIM_FORMATION` | Excel → DIM_FORMATION | 266 | **238** | 28 doublons · 85 NULLs |
 | `J5_Load_FAIT_RH` | DIM/* → FAIT_RH | 100 emp | **100** | Agrégations + calculs |
 
-📄 **Documentation complète des jobs** → [`talend/talend_JOBS.md`](talend/JOBS.md)
+📄 **Documentation complète des jobs** → [`talend/talend_JOBS.md`](talend/talend_JOBS.md)
 
 ---
 
