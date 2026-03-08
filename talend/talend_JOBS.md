@@ -16,7 +16,7 @@
 | Indicateur | Valeur |
 |---|---|
 | Total lignes | **582** |
-| Doublons exacts | **62** (10.7%) |
+| Doublons exacts | **123** (21.1%) |
 | NULL motif | **54** (9.3%) |
 | NULL duree_jours | **50** (8.6%) |
 | NULL justifie | **53** (9.1%) |
