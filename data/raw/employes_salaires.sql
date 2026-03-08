@@ -1,8 +1,8 @@
--- Projet SI Décisionnels — Données RH
+-- Projet SI Décisionnels - Données RH
 -- 100 employés · 12% doublons · 10% nulls
 
-CREATE DATABASE IF NOT EXISTS rh_dw;
-USE rh_dw;
+CREATE DATABASE IF NOT EXISTS rh_entreprise;
+USE rh_entreprise;
 
 CREATE TABLE IF NOT EXISTS employes (matricule VARCHAR(10), nom VARCHAR(50), prenom VARCHAR(50), service VARCHAR(50), salaire_mensuel DECIMAL(10,2), ville VARCHAR(50), email VARCHAR(100));
 
