@@ -3,7 +3,7 @@
 
 > **Projet** : Création d'un entrepôt de données pour la gestion du personnel  
 > **Auteurs** : Hamza Bouguerra · Fares Messedi - ESPRIT 1BA2  
-> **Enseignant** : Sofien Boutaib | **Deadline** : 14 Mars 2026  
+> **Deadline** : 14 Mars 2026  
 > **Outil** : Talend Open Studio for Data Integration  
 > **Base source** : PostgreSQL `rh_entreprise` (port 5432)  
 > **Base cible** : PostgreSQL `rh_dw` (port 5432)
