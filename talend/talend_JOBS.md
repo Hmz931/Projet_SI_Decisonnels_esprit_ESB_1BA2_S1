@@ -5,22 +5,8 @@
 > **Auteurs** : Hamza Bouguerra · Fares Messedi - ESPRIT 1BA2  
 > **Deadline** : 14 Mars 2026  
 > **Outil** : Talend Open Studio for Data Integration  
-
-**Sources de données principales**
-
-| Source                   | Format          | Description                                      | Volume approximatif     |
-|--------------------------|-----------------|--------------------------------------------------|--------------------------|
-| rh_entreprise.employes   | PostgreSQL      | Données de base des employés (matricule, nom, service, salaire de base, ville, email) | ~100 lignes             |
-| rh_entreprise.salaires   | PostgreSQL      | Historique mensuel des salaires et primes 2024   | ~1200 lignes            |
-| absences_presences.csv   | CSV             | Données d’absences et présences                  | [à préciser]            |
-| formations.xlsx          | Excel           | Parcours de formation des employés               | [à préciser]            |
-
-**Cible**
-
-| Cible                    | SGBD            | Schéma / Port                                    | Objectif                          |
-|--------------------------|-----------------|--------------------------------------------------|------------------------------------|
-| rh_dw                    | PostgreSQL      | Port 5432
-
+> **Base source** : PostgreSQL `rh_entreprise` (port 5432)  
+> **Base cible** : PostgreSQL `rh_dw` (port 5432)
 ---
 
 ## 📁 Analyse des sources réelles
