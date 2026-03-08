@@ -41,7 +41,7 @@
 | Indicateur | Valeur |
 |---|---|
 | Total lignes | **266** |
-| Doublons exacts | **28** (10.5%) |
+| Doublons exacts | **54** (20.3%) |
 | NULL Coût (DT) | **31** (11.7%) |
 | NULL Statut | **30** (11.3%) |
 | NULL Durée (h) | **24** (9.0%) |
