@@ -254,18 +254,27 @@ footer a{color:var(--cyan);text-decoration:none;}
       Voir sur GitHub
     </a>
   </div>
-  <div class="avatars">
-    <div class="avatar-wrap">
-      <div class="avatar avatar-h" onclick="document.getElementById('inp-h').click()" title="Clique pour changer la photo">HMZ</div>
-      <div class="avatar-name">Hamza Bouguerra</div>
-      <input type="file" id="inp-h" accept="image/*" style="display:none" onchange="loadAvatar(this,'av-h')">
+<div class="avatars">
+  <div class="avatar-wrap">
+    <div class="avatar avatar-h">
+      <img src="https://avatars.githubusercontent.com/Hmz931" 
+           style="width:100%; height:100%; object-fit:cover; border-radius:50%;"
+           onerror="this.style.display='none'; this.parentElement.innerHTML='HMZ';">
     </div>
-    <div class="av-sep">×</div>
-    <div class="avatar-wrap">
-      <div class="avatar avatar-f" onclick="document.getElementById('inp-f').click()" title="Clique pour changer la photo">FS</div>
-      <div class="avatar-name">Fares Messedi</div>
-      <input type="file" id="inp-f" accept="image/*" style="display:none" onchange="loadAvatar(this,'av-f')">
+    <div class="avatar-name">Hamza Bouguerra</div>
+  </div>
+  
+  <div class="av-sep">×</div>
+  
+  <div class="avatar-wrap">
+    <div class="avatar avatar-f">
+      <img src="https://avatars.githubusercontent.com/FeresMessedi" 
+           style="width:100%; height:100%; object-fit:cover; border-radius:50%;"
+           onerror="this.style.display='none'; this.parentElement.innerHTML='FS';">
     </div>
+    <div class="avatar-name">Fares Messedi</div>
+  </div>
+</div>
   </div>
 </header>
 
