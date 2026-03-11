@@ -1,9 +1,6 @@
 -- Projet SI Décisionnels - Données RH
 -- 100 employés · 12% doublons · 10% nulls
 
-CREATE TABLE IF NOT EXISTS employes (matricule VARCHAR(10), nom VARCHAR(50), prenom VARCHAR(50), service VARCHAR(50), salaire_mensuel DECIMAL(10,2), ville VARCHAR(50), email VARCHAR(100));
-
-CREATE TABLE IF NOT EXISTS salaires (id_salaire INT, matricule VARCHAR(10), salaire_mensuel DECIMAL(10,2), mois INT, annee INT, prime DECIMAL(10,2));
 
 INSERT INTO employes VALUES ('EMP001','Blaxis','Orvan','Ressources Humaines',4402,'Ariana','orvan.blaxis@entreprise.tn');
 INSERT INTO employes VALUES ('EMP002','Mendris','Relia','Informatique',3963,'Kairouan','relia.mendris@entreprise.tn');
@@ -17,11 +14,10 @@ INSERT INTO employes VALUES ('EMP009','Brendis','Veria','Marketing',NULL,'Sousse
 INSERT INTO employes VALUES ('EMP010','Grelvon','Nemia','Logistique',1111,'Sfax','nemia.grelvon@entreprise.tn');
 -- DOUBLON
 INSERT INTO employes VALUES ('EMP010','GRELVON','Nemia','Logistique',1111,'Sfax','nemia.grelvon@entreprise.tn');
+
 INSERT INTO employes VALUES ('EMP011','Brendis','Tavin','Commercial',NULL,'Bizerte',NULL);
 INSERT INTO employes VALUES ('EMP012','Brendis','Calus','Administration',4055,'Sfax','calus.brendis@entreprise.tn');
 INSERT INTO employes VALUES ('EMP013','Dravon','Solia','Logistique',NULL,'Sfax','solia.dravon@entreprise.tn');
--- DOUBLON
-INSERT INTO employes VALUES ('EMP013','DRAVON','Solia','Logistique',NULL,'Sfax','solia.dravon@entreprise.tn');
 INSERT INTO employes VALUES ('EMP014','Ornex','Gaxon','Juridique',3144,NULL,'gaxon.ornex@entreprise.tn');
 INSERT INTO employes VALUES ('EMP015','Blaxis','Veria','Ressources Humaines',1791,'Sfax','veria.blaxis@entreprise.tn');
 INSERT INTO employes VALUES ('EMP016','Alvorix','Kelia','Logistique',2214,'Gafsa','kelia.alvorix@entreprise.tn');
@@ -36,15 +32,17 @@ INSERT INTO employes VALUES ('EMP024','Ornex','Aelus','Marketing',2998,NULL,'ael
 INSERT INTO employes VALUES ('EMP025','Perthas','Kelia','Commercial',NULL,'Bizerte','kelia.perthas@entreprise.tn');
 INSERT INTO employes VALUES ('EMP026','Darven','Aelus','Informatique',1593,'Kairouan','aelus.darven@entreprise.tn');
 INSERT INTO employes VALUES ('EMP027','Krevan','Cavan','Production',926,'Monastir','cavan.krevan@entreprise.tn');
--- DOUBLON
-INSERT INTO employes VALUES ('EMP027','KREVAN','Cavan','Production',926,'Monastir','cavan.krevan@entreprise.tn');
 INSERT INTO employes VALUES ('EMP028','Krevan','Astra','Logistique',2851,'Nabeul','astra.krevan@entreprise.tn');
 -- DOUBLON
-INSERT INTO employes VALUES ('EMP028','KREVAN','Astra','Logistique',2851,'Nabeul','astra.krevan@entreprise.tn');
+INSERT INTO employes VALUES ('EMP027','Krevan','cavan','Production',926,'Monastir','cavan.krevan@entreprise.tn');
+
 INSERT INTO employes VALUES ('EMP029','Varlox','Doran','Administration',1392,'Nabeul','doran.varlox@entreprise.tn');
 INSERT INTO employes VALUES ('EMP030','Mendris','Liris','Qualité',4021,'Nabeul','liris.mendris@entreprise.tn');
 INSERT INTO employes VALUES ('EMP031','Thraxis','Prax','Administration',NULL,'Sfax','prax.thraxis@entreprise.tn');
 INSERT INTO employes VALUES ('EMP032','Brendis','Nemia','Marketing',1413,'Gabès','nemia.brendis@entreprise.tn');
+-- DOUBLON
+INSERT INTO employes VALUES ('EMP032','Brendis','Nemia','Marketing',1413,'Gabès','nemia.brendis@entreprise.tn');
+
 INSERT INTO employes VALUES ('EMP033','Alvorix','Daxon','Finance',2170,'Ariana','daxon.alvorix@entreprise.tn');
 INSERT INTO employes VALUES ('EMP034','Varlox','Selia','Commercial',3584,'Bizerte','selia.varlox@entreprise.tn');
 INSERT INTO employes VALUES ('EMP035','Alvorix','Veria','Administration',4445,'Nabeul','veria.alvorix@entreprise.tn');
@@ -53,16 +51,12 @@ INSERT INTO employes VALUES ('EMP037','Belvak','Gaxon','Commercial',3994,'Sousse
 INSERT INTO employes VALUES ('EMP038','Alvorix','Calus','Logistique',1270,NULL,'calus.alvorix@entreprise.tn');
 INSERT INTO employes VALUES ('EMP039','Mendris','Astra','Juridique',2533,'Gabès','astra.mendris@entreprise.tn');
 INSERT INTO employes VALUES ('EMP040','Tholux','Velun','Ressources Humaines',3188,'Tunis','velun.tholux@entreprise.tn');
--- DOUBLON
-INSERT INTO employes VALUES ('EMP040','THOLUX','Velun','Ressources Humaines',3188,'Tunis','velun.tholux@entreprise.tn');
 INSERT INTO employes VALUES ('EMP041','Darven','Relia','Juridique',NULL,'Ariana','relia.darven@entreprise.tn');
 INSERT INTO employes VALUES ('EMP042','Krevan','Toriel','Qualité',1118,'Nabeul','toriel.krevan@entreprise.tn');
 INSERT INTO employes VALUES ('EMP043','Perthas','Toriel','Informatique',3246,'Nabeul','toriel.perthas@entreprise.tn');
 INSERT INTO employes VALUES ('EMP044','Ornex','Solia','Marketing',3297,'Nabeul','solia.ornex@entreprise.tn');
 INSERT INTO employes VALUES ('EMP045','Krevan','Lexia','Ressources Humaines',NULL,'Sfax','lexia.krevan@entreprise.tn');
 INSERT INTO employes VALUES ('EMP046','Calvera','Delira','Production',3295,'Bizerte','delira.calvera@entreprise.tn');
--- DOUBLON
-INSERT INTO employes VALUES ('EMP046','CALVERA','Delira','Production',3295,'Bizerte','delira.calvera@entreprise.tn');
 INSERT INTO employes VALUES ('EMP047','Belvak','Mira','Commercial',3108,'Ariana','mira.belvak@entreprise.tn');
 INSERT INTO employes VALUES ('EMP048','Darven','Orvan','Logistique',1764,'Monastir','orvan.darven@entreprise.tn');
 INSERT INTO employes VALUES ('EMP049','Brendis','Solia','Finance',921,'Ariana','solia.brendis@entreprise.tn');
@@ -70,22 +64,16 @@ INSERT INTO employes VALUES ('EMP050','Ornex','Doran','Production',1996,'Gafsa',
 INSERT INTO employes VALUES ('EMP051','Varlox','Daxon','Informatique',3394,'Gafsa','daxon.varlox@entreprise.tn');
 INSERT INTO employes VALUES ('EMP052','Luxorin','Tavin','Logistique',2579,'Tunis','tavin.luxorin@entreprise.tn');
 INSERT INTO employes VALUES ('EMP053','Ornex','Kelia','Logistique',886,'Ariana','kelia.ornex@entreprise.tn');
--- DOUBLON
-INSERT INTO employes VALUES ('EMP053','ORNEX','Kelia','Logistique',886,'Ariana','kelia.ornex@entreprise.tn');
 INSERT INTO employes VALUES ('EMP054','Brendis','Relia','Informatique',2183,'Gabès','relia.brendis@entreprise.tn');
 INSERT INTO employes VALUES ('EMP055','Mendris','Relia','Juridique',NULL,NULL,'relia.mendris@entreprise.tn');
 INSERT INTO employes VALUES ('EMP056','Calvera','Veria','Finance',4107,'Gafsa','veria.calvera@entreprise.tn');
 INSERT INTO employes VALUES ('EMP057','Blaxis','Lexia','Informatique',4259,'Sfax','lexia.blaxis@entreprise.tn');
--- DOUBLON
-INSERT INTO employes VALUES ('EMP057','BLAXIS','Lexia','Informatique',4259,'Sfax','lexia.blaxis@entreprise.tn');
 INSERT INTO employes VALUES ('EMP058','Sylmor','Relia','Logistique',1495,'Gabès','relia.sylmor@entreprise.tn');
 INSERT INTO employes VALUES ('EMP059','Calvera','Solia','Informatique',902,'Tunis','solia.calvera@entreprise.tn');
 INSERT INTO employes VALUES ('EMP060','Tholux','Daxon','Production',2180,'Kairouan','daxon.tholux@entreprise.tn');
 INSERT INTO employes VALUES ('EMP061','Grelvon','Calus','Administration',1198,'Nabeul',NULL);
 INSERT INTO employes VALUES ('EMP062','Zandrix','Astra','Ressources Humaines',4300,'Bizerte','astra.zandrix@entreprise.tn');
 INSERT INTO employes VALUES ('EMP063','Luxorin','Seria','Commercial',1717,'Nabeul','seria.luxorin@entreprise.tn');
--- DOUBLON
-INSERT INTO employes VALUES ('EMP063','LUXORIN','Seria','Commercial',1717,'Nabeul','seria.luxorin@entreprise.tn');
 INSERT INTO employes VALUES ('EMP064','Zandrix','Arven','Commercial',2931,'Sousse','arven.zandrix@entreprise.tn');
 INSERT INTO employes VALUES ('EMP065','Varlox','Nemia','Informatique',1359,'Sousse','nemia.varlox@entreprise.tn');
 INSERT INTO employes VALUES ('EMP066','Grelvon','Tavin','Finance',2263,NULL,NULL);
@@ -110,8 +98,6 @@ INSERT INTO employes VALUES ('EMP084','Alvorix','Gaxon','Ressources Humaines',14
 INSERT INTO employes VALUES ('EMP085','Darven','Kelia','Commercial',2824,'Bizerte','kelia.darven@entreprise.tn');
 INSERT INTO employes VALUES ('EMP086','Grelvon','Solia','Administration',3003,'Gafsa','solia.grelvon@entreprise.tn');
 INSERT INTO employes VALUES ('EMP087','Croval','Mira','Marketing',2930,'Kairouan','mira.croval@entreprise.tn');
--- DOUBLON
-INSERT INTO employes VALUES ('EMP087','CROVAL','Mira','Marketing',2930,'Kairouan','mira.croval@entreprise.tn');
 INSERT INTO employes VALUES ('EMP088','Dravon','Noxel','Juridique',4285,'Monastir','noxel.dravon@entreprise.tn');
 INSERT INTO employes VALUES ('EMP089','Calvera','Torvan','Administration',NULL,'Tunis','torvan.calvera@entreprise.tn');
 INSERT INTO employes VALUES ('EMP090','Thraxis','Prax','Administration',1895,'Gafsa','prax.thraxis@entreprise.tn');
@@ -120,15 +106,17 @@ INSERT INTO employes VALUES ('EMP092','Calvera','Calus','Qualité',3940,'Monasti
 INSERT INTO employes VALUES ('EMP093','Luxorin','Lexia','Ressources Humaines',1401,'Kairouan','lexia.luxorin@entreprise.tn');
 INSERT INTO employes VALUES ('EMP094','Croval','Daxon','Qualité',2466,'Gabès','daxon.croval@entreprise.tn');
 INSERT INTO employes VALUES ('EMP095','Luxorin','Delira','Qualité',3274,'Bizerte','delira.luxorin@entreprise.tn');
--- DOUBLON
-INSERT INTO employes VALUES ('EMP095','LUXORIN','Delira','Qualité',3274,'Bizerte','delira.luxorin@entreprise.tn');
 INSERT INTO employes VALUES ('EMP096','Alvorix','Calus','Juridique',2757,'Ariana','calus.alvorix@entreprise.tn');
 INSERT INTO employes VALUES ('EMP097','Dravon','Astra','Administration',3862,'Monastir','astra.dravon@entreprise.tn');
 INSERT INTO employes VALUES ('EMP098','Zandrix','Gaxon','Administration',2038,'Tunis','gaxon.zandrix@entreprise.tn');
 INSERT INTO employes VALUES ('EMP099','Croval','Cavan','Qualité',993,'Bizerte','cavan.croval@entreprise.tn');
 INSERT INTO employes VALUES ('EMP100','Grelvon','Nemia','Production',3719,'Ariana','nemia.grelvon@entreprise.tn');
 -- DOUBLON
-INSERT INTO employes VALUES ('EMP100','GRELVON','Nemia','Production',3719,'Ariana','nemia.grelvon@entreprise.tn');
+INSERT INTO employes VALUES ('EMP098','Zandrix','Gaxon','Administration',2038,'Tunis','gaxon.zandrix@entreprise.tn');
+INSERT INTO employes VALUES ('EMP099','Croval','Cavan','Qualité',993,'Bizerte','cavan.croval@entreprise.tn');
+INSERT INTO employes VALUES ('EMP100','Grelvon','Nemia','Production',3719,'Ariana','nemia.grelvon@entreprise.tn');
+
+
 INSERT INTO salaires VALUES (1,'EMP001',4402,1,2024,150);
 INSERT INTO salaires VALUES (2,'EMP001',NULL,2,2024,100);
 INSERT INTO salaires VALUES (3,'EMP001',4402,3,2024,300);

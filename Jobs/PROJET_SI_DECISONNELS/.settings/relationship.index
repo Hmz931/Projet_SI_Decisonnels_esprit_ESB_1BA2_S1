@@ -1,0 +1,119 @@
+[ {
+  "baseItem" : {
+    "id" : "_0P8wMBqKEfGKMKaUrvSXCg",
+    "version" : "0.1",
+    "type" : "job"
+  },
+  "relatedItems" : [ {
+    "id" : "_RJJ1MBwBEfGfzplJgeombw",
+    "version" : "Latest",
+    "type" : "property"
+  }, {
+    "id" : "_RJJ1MBwBEfGfzplJgeombw - stg_absences_presences",
+    "version" : "Latest",
+    "type" : "schema"
+  } ]
+}, {
+  "baseItem" : {
+    "id" : "_1nE7MBqKEfGKMKaUrvSXCg",
+    "version" : "0.1",
+    "type" : "job"
+  },
+  "relatedItems" : [ {
+    "id" : "_RJJ1MBwBEfGfzplJgeombw",
+    "version" : "Latest",
+    "type" : "property"
+  }, {
+    "id" : "_RJJ1MBwBEfGfzplJgeombw - stg_formations",
+    "version" : "Latest",
+    "type" : "schema"
+  } ]
+}, {
+  "baseItem" : {
+    "id" : "_2tjbEBqKEfGKMKaUrvSXCg",
+    "version" : "0.1",
+    "type" : "job"
+  },
+  "relatedItems" : [ {
+    "id" : "_WvkzgBvzEfGo3cuhZ5prBg",
+    "version" : "Latest",
+    "type" : "property"
+  }, {
+    "id" : "_WvkzgBvzEfGo3cuhZ5prBg - dim_absence",
+    "version" : "Latest",
+    "type" : "schema"
+  }, {
+    "id" : "_WvkzgBvzEfGo3cuhZ5prBg - dim_employe",
+    "version" : "Latest",
+    "type" : "schema"
+  }, {
+    "id" : "_WvkzgBvzEfGo3cuhZ5prBg - dim_formations",
+    "version" : "Latest",
+    "type" : "schema"
+  }, {
+    "id" : "_WvkzgBvzEfGo3cuhZ5prBg - dim_temps",
+    "version" : "Latest",
+    "type" : "schema"
+  } ]
+}, {
+  "baseItem" : {
+    "id" : "_3dY-YBzAEfG7266iXRzW4w",
+    "version" : "0.1",
+    "type" : "job"
+  },
+  "relatedItems" : [ {
+    "id" : "PROJET_SI_DECISONNELS:_0P8wMBqKEfGKMKaUrvSXCg",
+    "version" : "Latest",
+    "type" : "job"
+  }, {
+    "id" : "PROJET_SI_DECISONNELS:_1nE7MBqKEfGKMKaUrvSXCg",
+    "version" : "Latest",
+    "type" : "job"
+  }, {
+    "id" : "PROJET_SI_DECISONNELS:_2tjbEBqKEfGKMKaUrvSXCg",
+    "version" : "Latest",
+    "type" : "job"
+  }, {
+    "id" : "PROJET_SI_DECISONNELS:_Pw0WIBqJEfGKMKaUrvSXCg",
+    "version" : "Latest",
+    "type" : "job"
+  }, {
+    "id" : "PROJET_SI_DECISONNELS:_wk_hYBqKEfGKMKaUrvSXCg",
+    "version" : "Latest",
+    "type" : "job"
+  }, {
+    "id" : "PROJET_SI_DECISONNELS:_ymNyQBqKEfGKMKaUrvSXCg",
+    "version" : "Latest",
+    "type" : "job"
+  } ]
+}, {
+  "baseItem" : {
+    "id" : "_Pw0WIBqJEfGKMKaUrvSXCg",
+    "version" : "0.1",
+    "type" : "job"
+  },
+  "relatedItems" : [ {
+    "id" : "_6zqakBrnEfG1RtYnS_j43g",
+    "version" : "Latest",
+    "type" : "property"
+  }, {
+    "id" : "_PzqFwBrsEfG1RtYnS_j43g",
+    "version" : "Latest",
+    "type" : "property"
+  }, {
+    "id" : "_6zqakBrnEfG1RtYnS_j43g - metadata",
+    "version" : "Latest",
+    "type" : "schema"
+  }, {
+    "id" : "_PzqFwBrsEfG1RtYnS_j43g - metadata",
+    "version" : "Latest",
+    "type" : "schema"
+  } ]
+}, {
+  "baseItem" : {
+    "id" : "_wk_hYBqKEfGKMKaUrvSXCg",
+    "version" : "0.1",
+    "type" : "job"
+  },
+  "relatedItems" : [ ]
+} ]

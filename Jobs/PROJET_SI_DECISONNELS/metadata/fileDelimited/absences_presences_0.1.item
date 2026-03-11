@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:TalendMetadata="http://www.talend.org/metadata/connection/2010" xmlns:orgomg.cwm.resource.record="http:///orgomg/cwm/resource/record.ecore">
+  <TalendMetadata:DelimitedFileConnection xmi:id="_6zs20BrnEfG1RtYnS_j43g" name="absences_presences" dataPackage="_6zs20RrnEfG1RtYnS_j43g" Server="Localhost 127.0.0.1" FilePath="C:/Users/hamza/Desktop/ESB/M1S1/5_Systèmes d'Information Décisionnels/Projet_SI_Decisonnels/data/raw/absences_presences.csv" Encoding="UTF-8" FieldSeparatorValue="&quot;;&quot;" RowSeparatorValue="&quot;\n&quot;" UseHeader="true" HeaderValue="1" FooterValue="0" LimitValue="" FirstLineCaption="true" RemoveEmptyRow="true" EscapeChar="&quot;\&quot;&quot;" TextEnclosure="&quot;\&quot;&quot;"/>
+  <orgomg.cwm.resource.record:RecordFile xmi:id="_6zs20RrnEfG1RtYnS_j43g" name="default" dataManager="_6zs20BrnEfG1RtYnS_j43g">
+    <ownedElement xsi:type="TalendMetadata:MetadataTable" xmi:id="_6zs20hrnEfG1RtYnS_j43g" id="_uQ6rsBrnEfG1RtYnS_j43g" label="metadata">
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_6zs20xrnEfG1RtYnS_j43g" label="id_absence" length="7" talendType="id_String" pattern="&quot;dd-MM-yyyy&quot;"/>
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_6zs21BrnEfG1RtYnS_j43g" label="matricule" length="6" talendType="id_String" pattern="&quot;dd-MM-yyyy&quot;"/>
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_6zs21RrnEfG1RtYnS_j43g" label="date_absence" length="10" talendType="id_Date" pattern="&quot;dd-MM-yyyy&quot;"/>
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_6zs21hrnEfG1RtYnS_j43g" label="motif" length="21" talendType="id_String" pattern="&quot;dd-MM-yyyy&quot;"/>
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_6zs21xrnEfG1RtYnS_j43g" label="duree_jours" length="2" talendType="id_String" pattern="&quot;dd-MM-yyyy&quot;"/>
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_6zs22BrnEfG1RtYnS_j43g" label="justifie" length="3" talendType="id_String" pattern="&quot;dd-MM-yyyy&quot;"/>
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_6zs22RrnEfG1RtYnS_j43g" label="remarque" talendType="id_String" pattern="&quot;dd-MM-yyyy&quot;"/>
+    </ownedElement>
+  </orgomg.cwm.resource.record:RecordFile>
+</xmi:XMI>
